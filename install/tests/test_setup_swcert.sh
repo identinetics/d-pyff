@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-
 main() {
-    set -e
     setup_logging
     prepare_test_config_sw_cert
     prepare_git_user
