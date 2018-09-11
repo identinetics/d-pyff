@@ -32,7 +32,8 @@ pipeline {
             }
             steps {
                 sh '''
-                    docker-compose -f dc.yaml down -v 2>/dev/null | true
+                    #docker-compose -f dc.yaml down -v 2>/dev/null | true
+                    docker-compose -f dc.yaml down -v | true
                 '''
             }
         }
