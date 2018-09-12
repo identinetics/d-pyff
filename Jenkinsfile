@@ -42,6 +42,7 @@ pipeline {
                 sh '''
                     [[ "$nocache" ]] && nocacheopt='-c'
                     export MANIFEST_SCOPE='local'
+                    cp dc.yaml.default dc.yaml
                     ./dcshell/build -f dc.yaml $nocacheopt
                     echo "=== build completed with rc $?"
                 '''
