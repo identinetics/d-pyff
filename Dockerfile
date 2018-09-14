@@ -4,7 +4,7 @@ LABEL maintainer="Rainer Hörbe <r2h2@hoerbe.at>"
 RUN yum -y update \
  && yum -y install sudo sysvinit-tools wget xmlstarlet \
  && yum -y install usbutils gcc gcc-c++ git redhat-lsb-core \
-                   opensc pcsc-lite engine_pkcs11 gnutls-utils softhsm \
+                   opensc pcsc-lite engine_pkcs11 gnutls-utils softhsm unzip \
  && yum -y install python-pip python-devel libxslt-devel swig \
  && yum clean all
 
