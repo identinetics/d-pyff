@@ -1,5 +1,3 @@
-// Build-Setup-Test (no prior cleanup; leave container running after test)
-
 pipeline {
     agent any
     options { disableConcurrentBuilds() }
@@ -11,18 +9,16 @@ pipeline {
     }
 
     stages {
-        stage('Job Env') {
+        stage('Config ') {
             steps {
                 sh '''
-                    set +x
-                    echo "Initial cleanup=start_clean"
-                    echo "Build with option nocache=$nocache"
-                    echo "Push  image=$pushimage"
-                    if [[ "$pushimage" ]]; then
-                        default_registry=$(docker info 2> /dev/null |egrep '^Registry' | awk '{print $2}')
-                        echo "  Docker default registry: $default_registry"
+                   if [[ "$DOCKER_REGISTRY_USER" ]]; then
+                        echo "  Docker registry user: $DOCKER_REGISTRY_USER"
+                        ./dcshell/update_config.sh dc.yaml.default > dc.yaml
+                    else
+                        cp dc.yaml.default dc.yaml
                     fi
-                    echo "Keep running after test=$keep_running"
+                    head dc.yaml
                 '''
             }
         }
@@ -32,18 +28,17 @@ pipeline {
             }
             steps {
                 sh '''
-                    #docker-compose -f dc.yaml down -v 2>/dev/null | true
-                    docker-compose -f dc.yaml down -v | true
+                    docker-compose -f dc.yaml down -v 2>/dev/null | true
                 '''
             }
         }
         stage('Build') {
             steps {
-                sh '''
-                    [[ "$nocache" ]] && nocacheopt='-c'
+                sh '''#!/bin/bash
+                    [[ "$nocache" ]] && nocacheopt='-c' && echo 'build with option nocache'
                     export MANIFEST_SCOPE='local'
-                    cp dc.yaml.default dc.yaml
-                    ./dcshell/build -f dc.yaml $nocacheopt
+                    export PROJ_HOME='.'
+                     ./dcshell/build -f dc.yaml $nocacheopt
                     echo "=== build completed with rc $?"
                 '''
             }
@@ -63,6 +58,8 @@ pipeline {
             }
             steps {
                 sh '''
+                    default_registry=$(docker info 2> /dev/null |egrep '^Registry' | awk '{print $2}')
+                    echo "  Docker default registry: $default_registry"
                     export MANIFEST_SCOPE='local'
                     export PROJ_HOME='.'
                     ./dcshell/build -f dc.yaml -P
@@ -73,12 +70,14 @@ pipeline {
     post {
         always {
             sh '''
-                if [[ ! "$keep_running" ]]; then
-                    echo 'removing docker volumes and container'
-                    docker-compose -f dc.yaml down -v
+                if [[ "$keep_running" ]]; then
+                    echo "Keep container running"
+                else
+                    echo 'Remove container, volumes'
+                    docker-compose -f dc.yaml rm --force -v 2>/dev/null || true
+                    docker rm --force -v shibsp 2>/dev/null || true  # in case docker-compose fails ..
                 fi
             '''
         }
     }
-
 }

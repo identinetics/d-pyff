@@ -3,7 +3,7 @@ services:
   pyff:
     build:
         context: .
-    image: ${DOCKER_REGISTRY_USER}/pyff
+    image: local/pyff
     container_name: pyff
     hostname: pyff
     labels:
