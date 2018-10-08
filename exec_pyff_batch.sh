@@ -2,7 +2,7 @@
 
 main() {
     get_commandline_opts $@
-    _load_dcshell_lib
+    get_projdir
     init_sudo
     prepare_command
     exec_commands
@@ -46,8 +46,15 @@ usage() {
 }
 
 
-_load_dcshell_lib() {
-    source $DCSHELL_HOME/dcshell_lib.sh
+get_projdir() {
+    projdir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+}
+
+
+init_sudo() {
+    if (( $(id -u) != 0 )); then
+        sudo='sudo -n'
+    fi
 }
 
 
