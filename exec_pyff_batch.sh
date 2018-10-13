@@ -11,8 +11,10 @@ main() {
 
 get_commandline_opts() {
     projdir='.'
-    while getopts ":D:ghHn:psS" opt; do
+    while getopts ":cC:D:ghHn:psS" opt; do
       case $opt in
+        c) compose='True';;
+        C) servicename=$OPTARG;;
         D) projdir=$OPTARG;;
         g) git='True';;
         H) htmlout='-H';;
@@ -34,7 +36,9 @@ get_commandline_opts() {
 
 
 usage() {
-    echo "usage: $0 [-h] [-H] [-i] [-s|-S]
+    echo "usage: $0 [-c] [-C servicename] [-h] [-H] [-i] [-s|-S]
+       -c  use docker compose (default: address container via docker service)
+       -C  Docker service name
        -D  specify docker-compose file directory
        -g  git pull before pyff and push afterwards (use if PYFFOUT has a git repo)
        -h  print this help text
@@ -59,7 +63,13 @@ init_sudo() {
 
 
 prepare_command() {
-    cmd="${sudo} docker-compose -f ${projdir}/dc${config_nr}.yaml exec pyff${config_nr}"
+    if [[ "$compose" ]]; then
+        cmd="${sudo} docker-compose -f ${projdir}/dc${config_nr}.yaml exec pyff${config_nr}"
+    else  # get container by servicename (-> `docker service ls`)
+        taskid=$(docker service ps -q ${servicename} |head -1)
+        containerid=$(docker inspect -f '{{.Status.ContainerStatus.ContainerID}}' ${taskid})
+        cmd="docker exec -it ${containerid}"
+    fi
 }
 
 
