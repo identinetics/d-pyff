@@ -29,7 +29,8 @@ prepare_test_config_sw_cert() {
     cp -pr /opt/testdata/etc/pyff/* /etc/pyff/
     cp -pr /opt/testdata/md_source/* /var/md_source/
 
-
+    # remove files from previous test runs
+    rm -f /etc/pki/sign/*/metadata*; rm -f /home/pyff/.ssh/id_ed25519_*; rm -rf /var/md_feed/.git
 }
 
 

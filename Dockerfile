@@ -1,8 +1,7 @@
-FROM intra/centos7_py34_base
-LABEL maintainer="Rainer Hörbe <r2h2@hoerbe.at>"
+FROM intra/centos7_py36_base
 
 RUN yum -y update \
- && yum -y install sudo sysvinit-tools wget xmlstarlet \
+ && yum -y install logrotate sudo sysvinit-tools wget xmlstarlet \
  && yum -y install usbutils gcc gcc-c++ git redhat-lsb-core \
                    opensc pcsc-lite engine_pkcs11 gnutls-utils softhsm unzip \
  && yum -y install python-pip python-devel libxslt-devel swig \
@@ -13,8 +12,9 @@ RUN yum -y update \
 RUN pip install six \
  && easy_install --upgrade six \
  && pip install importlib
-#using iso8601 0.1.9 because of str/int compare bug in pyff
-RUN pip install babel future iso8601==0.1.9 \
+# using iso8601 0.1.9 because of str/int compare bug in pyff;
+# using more-itertools<6.0.0 because of SyntaxError mit more.py line 329
+RUN pip install babel future iso8601==0.1.9 'more-itertools<6.0.0' \
  && pip install lxml \
  && pip install pykcs11 parse
 
