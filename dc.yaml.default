@@ -37,7 +37,11 @@ services:
         - 03pyff.home_pyff_ssh:/home/pyff/.ssh:Z
         - 03pyff.var_log:/var/log:Z
         - 03pyff.var_md_feed:/var/md_feed:z
-        - 03pyff.var_md_source:/var/md_source:z
+        - 03pyff.var_md_source:/var/md_source
+    privileged: true
+    devices:
+      - "/dev/bus/usb"
+
     cap_drop:
       - ALL
 
