@@ -1,10 +1,8 @@
 # Deploy pyFF using docker
 
 A docker image for running a pyFF instance in daemon mode (mdx service and idp discovery as implemented by pyff/mdx).
-The metadata aggregator start script assumes that the daemon is running (althout this could be changed easily).
 
-As with any clean Docker image containers are immutable, i.e. a container can be removed and re-created
-any time without loss of data, because persistent data is stored on mounted volumes.
+The metadata aggregator used the same image and volumes as pyff/mdx, but creat a separte container.
 
 The image is prepared for for metadata signature creation with pkcs#11 devices.
 
@@ -28,16 +26,13 @@ The pyff project includes a Dockerfile based on Ubuntu. The differences of this 
 
 ## Usage: pyffd (IDP discovery and MDQ service)
 
-Initialize mounted volumes with sample data (optional):
-    
-    docker-compose -f dc.yaml run pyff bash init_sample.sh
+Initialize mounted volumes with sample data from /opt/testdata (optional).
 
-Configure pyff: 
-    Copy a default file to /etc/pyff/md_aggregate_sign.fd and adjust the settings.
-    (/etc/pyff is the interal path of the container, see conf.sh for the external mapping)
+pyffd needs a pipeline definition (e.g. /opt/testdata/etc/pyff/mdx_softhsm.fd) and
+key material either as sw-certificate or PKCS11 device.
+The file with the pipeline definition must  match PIPELINEDAEMON in dc.yaml.
 
-
-Configure environment variables in conf.sh and start the daemon:
+Configure environment variables in dc.yaml and start the daemon:
 
     FREQUENCY
     LOGLEVEL 
@@ -49,7 +44,7 @@ Configure environment variables in conf.sh and start the daemon:
     
 Take care of appropriate port mapping and/or proxying.
 
-Documentation: See https://leifj.github.io/pyFF
+Documentation: See https://github.com/IdentityPython/pyFF
 
 
 ## Usage: pyFF (Aggregator running in batch mode)

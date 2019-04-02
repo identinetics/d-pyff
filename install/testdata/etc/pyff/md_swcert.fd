@@ -10,5 +10,5 @@
      ID: your_metadatafeed_prefix_
 - sign:
      key: /etc/pki/sign/private/metadata_key.pem
-     cert: /etc/pki/sign/private/metadata_key.pem
+     cert: /etc/pki/sign/certs/metadata_cert.pem
 - publish: /var/md_feed/metadata.xml

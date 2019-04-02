@@ -11,18 +11,13 @@ main() {
 
 get_commandline_opts() {
     projdir='.'
-    while getopts ":cC:D:ghHn:psS" opt; do
+    while getopts ":c:C:D:ghHpsS" opt; do
       case $opt in
-        c) compose='True';;
+        c) composecfg=$OPTARG;;
         C) servicename=$OPTARG;;
         D) projdir=$OPTARG;;
         g) git='True';;
         H) htmlout='-H';;
-        n) re='^[0-9][0-9]$'
-           if ! [[ $OPTARG =~ $re ]] ; then
-               echo "error: -n argument ($OPTARG) is not a number in the range frmom 02 .. 99" >&2; exit 1
-           fi
-           config_nr=$OPTARG;;
         p) print='True';;
         s) split='pyff';;
         S) split='xmlsectool';;
@@ -32,18 +27,19 @@ get_commandline_opts() {
       esac
     done
     shift $((OPTIND-1))
+    [[ "$composecfg" && "$servicename" ]] && (echo "-c and -C are mutually exclusive"; exit 1)
+    [[ "$composecfg" || "$servicename" ]] || (echo "either -c or -C must be specified"; exit 1)
 }
 
 
 usage() {
-    echo "usage: $0 [-c] [-C servicename] [-h] [-H] [-i] [-s|-S]
-       -c  use docker compose (default: address container via docker service)
+    echo "usage: $0 [-c compose-config | -C servicename] [-h] [-H] [-i] [-s|-S]
+       -c  docker compose config file
        -C  Docker service name
        -D  specify docker-compose file directory
        -g  git pull before pyff and push afterwards (use if PYFFOUT has a git repo)
        -h  print this help text
        -H  generate HTML output from metadata
-       -n  configuration number ('<NN>' in conf<NN>.sh) (use if there is more than one)
        -p  print docker exec command on stdout
        -s  split and sign md aggregate using pyff for signing
        -S  split and sign md aggregate using xmlsectool for signing"
@@ -63,8 +59,8 @@ init_sudo() {
 
 
 prepare_command() {
-    if [[ "$compose" ]]; then
-        cmd="${sudo} docker-compose -f ${projdir}/dc${config_nr}.yaml exec pyff${config_nr}"
+    if [[ "$composecfg" ]]; then
+        cmd="${sudo} docker-compose -f ${projdir}/${composecfg} run pyff"
     else  # get container by servicename (-> `docker service ls`)
         taskid=$(docker service ps -q ${servicename} |head -1)
         containerid=$(docker inspect -f '{{.Status.ContainerStatus.ContainerID}}' ${taskid})

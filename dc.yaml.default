@@ -4,7 +4,6 @@ services:
     build:
         context: .
     image: local/pyff
-    container_name: pyff
     hostname: pyff
     labels:
       x.service: MD_Aggr/IDP_Disco
@@ -23,8 +22,8 @@ services:
         - MDSPLIT_UNSIGNED=/var/md_source/entities
         - MDSPLIT_SIGNED=/var/md_feed/entities
         - PIDFILE=/var/log/pyffd.pid
-        - PIPELINEBATCH=/etc/pyff/md_aggregator.fd
-        - PIPELINEDAEMON=/etc/pyff/mdx_disco.fd
+        - PIPELINEBATCH=/etc/pyff/md_swcert.fd
+        - PIPELINEDAEMON=/etc/pyff/mdx_swcert.fd
         - REPO_HOST=localhost
 
     #ports:
@@ -50,10 +49,17 @@ networks:
     name: jenkins
 
 volumes:
+volumes:
     03pyff.etc_pki_sign:
+      name: 03pyff.etc_pki_sign
     03pyff.etc_pyff:
+      name: 03pyff.etc_pyff
     03pyff.home_pyff_ssh:
+      name: 03pyff.home_pyff_ssh
     03pyff.var_log:
+      name: 03pyff.var_log
     03pyff.var_md_feed:
+      name: 03pyff.var_md_feed
     03pyff.var_md_source:
+      name: 03pyff.var_md_source
 

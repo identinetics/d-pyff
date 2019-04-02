@@ -32,12 +32,12 @@ lsusb | grep "$HSMUSBDEVICE"
 rc=$?
 set -e
 if (( $rc > 0 )); then
-    echo; echo 'HSM USB Device $HSMUSBDEVICE not found'
-    exit 0
-    #echo '=== test_pyff.sh (Aggregator) with SoftHSM ==='
-    #export PIPELINEBATCH=/etc/pyff/md_softhsm.fd
-    #/tests/test_pyff.sh
-    #echo '=== All tests completed with SoftHSM ==='
+    # echo; echo 'HSM USB Device $HSMUSBDEVICE not found'
+    # exit 0
+    echo '=== test_pyff.sh (Aggregator) with SoftHSM ==='
+    export PIPELINEBATCH=/etc/pyff/md_softhsm.fd
+    /tests/test_pyff.sh
+    echo '=== All tests completed with SoftHSM ==='
 else
     echo; echo '=== test_hsm_eToken.sh ==='
     /tests/test_hsm_eToken.sh
