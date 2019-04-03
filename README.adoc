@@ -1,75 +1,98 @@
-# Deploy pyFF using docker
+:toc:
+= Deploy pyFF using docker
 
-A docker image for running a pyFF instance in daemon mode (mdx service and idp discovery as implemented by pyff/mdx).
+== Overview
+Purpose:
 
-The metadata aggregator used the same image and volumes as pyff/mdx, but creat a separte container.
+1. A docker image for running a pyFF instance in daemon mode (mdx service and idp discovery as implemented by pyff/mdx).
+2. The metadata aggregator used the same image and volumes as pyff/mdx, but creat a separte container.
 
 The image is prepared for for metadata signature creation with pkcs#11 devices.
 
-## Why using this docker image?
 
 The pyff project includes a Dockerfile based on Ubuntu. The differences of this image are:
 
 - Based on CentOS 7
-- added docker-compose for build/run
-- Includes Jenkinsfile to test deployment with HSM-configuration
+- Various default, suche as docker-compose configuration
+- Includes Jenkinsfile
+- Dependencies to use Gemalto eToken HSM
 - Does not start as root; drops capabilities
-- Submodule dcshell for automatic generation of image build numbers for both source repo and dependency changes
+- Automatic generation of image build numbers for both source repo and dependency changes (-> dcshell submodule)
+- Function to push the aggregate (md_feed) to a git repo
+- Function to generate HTML pages for IDPs and SPs
+- Optional signing with XMLSECTOOL (using a java-based library)
 
-## Prepare project and build the docker image
 
-    git clone https://github.com/identinetics/docker-pyff
-    cd docker-pyff
+== Build
+
+The included Jenkinsfile can be used to build, test and push the docker image.
+To build without Jenkins use:
+
+    git clone https://github.com/identinetics/d-pyff
+    cd d-pyff
     git submodules update --init
-    # edit dc.yaml
     ./dcshell/build
 
-## Usage: pyffd (IDP discovery and MDQ service)
+== Usage
 
-Initialize mounted volumes with sample data from /opt/testdata (optional).
+=== General
 
-pyffd needs a pipeline definition (e.g. /opt/testdata/etc/pyff/mdx_softhsm.fd) and
-key material either as sw-certificate or PKCS11 device.
-The file with the pipeline definition must  match PIPELINEDAEMON in dc.yaml.
+The configuration controlled in the docker-compose configuration file.
+The default file is dc.yaml.default.
+The key elements for the behavior of pyff and pyffd are:
 
-Configure environment variables in dc.yaml and start the daemon:
+* Environment variables
+* Configuration in /etc/pki/sign, /etc/pyff
+* Input data n /var/md_source
 
-    FREQUENCY
-    LOGLEVEL 
-    PIDFILE
-    PIPELINEDAEMON
+For initial testing copy sample data from /opt/testdata:
 
-    docker-compose -f dc.yaml up -d
-    curl http://localhost:8080
-    
-Take care of appropriate port mapping and/or proxying.
+    cp -p /opt/testdata/etc/pyff/* /etc/pyff/
+    cp -pr /opt/testdata/etc/pki/sign/* /etc/pki/sign/
+    cp -pr /opt/testdata/md_source/* /var/md_source/
 
-Documentation: See https://github.com/IdentityPython/pyFF
+Other elements in the docker-compose configuration to be adpapted are:
 
+* service and volume names if running mor than one instance on a node
+* image (control deployed version with the tag value)
+* networks
 
-## Usage: pyFF (Aggregator running in batch mode)
+=== Aggregator running in batch mode (pyff)
 
 Functional enhancements to pyFF:
-- commit generated aggregate to git repo
-- generate HTML pages for IDPs and SPs.
+- Commit generated aggregate to git repo
+- Generate HTML pages for IDPs and SPs.
+- Generate one signed file per entity 
 
-### Preconditions: 
-* The container needs to be running already (usually as a pyffd). 
-* The `docker run` command needs to contain:
-    * 3 environment variables: LOGFILE, LOGLEVEL and PIPELINE;
-    * Do not run pyff as root. Use the user defined with CONTAINERUSER in conf.sh
+=== Configuration
 
-### Github authentication
+. Environment variables
+|===
+|
+| MDSIGN_CERT | 
+| MDSIGN_KEY | 
+| MD_AGGREGATE | 
+| MDFEED_HOST |
+| MDFEED_SSHUSER | 
+| MDFEED_REPO | 
+| MDSPLIT_UNSIGNED | 
+| MDSPLIT_SIGNED | 
+| PIDFILE | 
+| PIPELINEBATCH | 
+|===
+
+
+=== Git Authentication
 If the git pull/push operations require authentication your need to provide a default ssh keypair
 and register it with Github (Gitlab, ..) in the home directory of the container user, such as:
 
     docker-compose -f dc.yaml exec pyff bash
     ssh-keygen -t ed25519
     # add ~/.ssh/id_ed25519.pub as a deploy key with write access to the remote repo
-    ssh git@github.com  # validate that the github key fingerprint is valid
+    ssh -T git@github.com  # validate that the github key fingerprint is valid
     git config --global push.default simple
      
-### Run aggregator
+=== Run aggregator
 
 Start pyff:
  
@@ -81,14 +104,44 @@ Sample entry for /etc/crontab to run pyff every hour:
     29 *  *  *  *  root /docker_images/pyff/exec_pyff_batch.sh 2>&1 > /var/log/exec_pyff_batch.log
    
     
-## HSM/pyFF config
+== HSM/pyFF config
 
 Config the key name in md_aggregate_sign.fd to match the key name on the HSM.
 (See the line with 'sign -> key')
 
 Provide the PYKCS11PIN env variable if using the HSM.
 
-## CI, Staging and Versioning
+
+=== IDP discovery and MDQ service (pyffd)
+
+pyffd needs a pipeline definition (e.g. /opt/testdata/etc/pyff/mdx_softhsm.fd) and
+key material either as sw-certificate or PKCS11 device.
+The file with the pipeline definition must match PIPELINEDAEMON in dc.yaml.
+Modify the configuration to reflect your metadata policy.
+
+
+Configure environment variables in dc.yaml and start the daemon:
+
+
+. Environment variables
+|===
+| MDSIGN_CERT |
+| MDSIGN_KEY |
+| FREQUENCY |
+| PIPELINEDAEMON |
+|===
+
+
+    docker-compose -f dc.yaml up -d
+    curl http://localhost:8080
+
+Take care of appropriate port mapping and/or proxying.
+
+Documentation: See https://github.com/IdentityPython/pyFF
+
+
+
+== CI, Staging and Versioning
 
 There is a Jenkinsfile for CI. To use it the jenkins user:
 
@@ -96,3 +149,9 @@ There is a Jenkinsfile for CI. To use it the jenkins user:
  * Must have python3 in the path;
  * Must have pytest and pyYaml installed in python3
 
+== checking for errors
+
+By default, pyff is rather silent and does not output error conditions (to be fixed).
+For tracking problems:
+
+    export LOGLEVEL=DEBUG
