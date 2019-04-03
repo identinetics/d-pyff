@@ -21,7 +21,7 @@ setup_logging() {
 
 
 prepare_test_config_sw_cert() {
-    echo 'Test setup 01: set test config and add metadata source data (not overwriting existing data)'
+    echo 'Test swcert setup 01: set test config and add metadata source data (not overwriting existing data)'
     cp -np  /opt/testdata/etc/pki/tls/openssl.cnf /etc/pki/tls/
     cp -np  /opt/testdata/etc/pyff/* /etc/pyff/
     cp -npr /opt/testdata/md_source/*.xml /var/md_source/
@@ -35,7 +35,7 @@ prepare_test_config_sw_cert() {
 
 
 prepare_git_user() {
-    echo 'Test setup 02: setup git user'
+    echo 'Test swcert setup 02: setup git user'
     git config --global user.email "tester@testinetics.com"
     git config --global user.name "Unit Test"
     git config --global push.default simple
@@ -43,7 +43,7 @@ prepare_git_user() {
 
 
 prepare_mdfeed_repo() {
-    echo 'Test setup 03: create local mdfeed repo'
+    echo 'Test swcert setup 03: create local mdfeed repo'
     cd /var/md_feed
     git init > $LOGDIR/prepare_mdfeed_repo.log
     git add --all >> $LOGDIR/prepare_mdfeed_repo.log

@@ -13,4 +13,4 @@
     # the last part of the "URI" is the key name on the eToken
     key: pkcs11:///usr/lib64/libeToken.so/test
     # Token PW from ENV PYKCS11PIN
-- publish: ../testdata/md_feed/metadata_hsm.xml
+- publish: /var/md_feed/metadata_hsm.xml
