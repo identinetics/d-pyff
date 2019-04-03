@@ -9,10 +9,7 @@ export USERPIN=$PYKCS11PIN
 export PKCS11_CARD_DRIVER=$PYKCS11LIB
 
 echo '=== setup test fixture (replace existing data and configuration) ==='
-rm -f /etc/pyff/*.fd
-rm -rf /etc/pki/sign/*
-rm -rf /var/md_source/*
-/tests/test_setup_data.sh
+/tests/test_setup_data.sh -d
 
 echo; echo '=== test_pyff.sh (Aggregator) with SW-cert ==='
 export PIPELINEBATCH=/etc/pyff/md_swcert.fd

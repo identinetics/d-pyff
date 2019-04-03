@@ -1,12 +1,36 @@
 #!/usr/bin/env bash
 
 main() {
+    check_root
+    get_commandline_opts
     setup_logging
+    delete_exsting_data
     prepare_test_config_sw_cert
     prepare_git_user
     prepare_mdfeed_repo
     create_sw_signing_cert
     create_git_ssh_keys
+}
+
+
+check_root() {
+    if (( $(id -u) == 0 )); then
+        echo 'setup is not supposed to be run with root privileges'
+        exit 1
+    fi
+}
+
+
+get_commandline_opts() {
+    while getopts ":d" opt; do
+      case $opt in
+        d) deleteopt=1;;
+        *) echo "usage from shell: $0 [-d]
+             -d  delete previous data
+           "; exit 0;;
+      esac
+    done
+    shift $((OPTIND-1))
 }
 
 
@@ -20,8 +44,21 @@ setup_logging() {
 }
 
 
+delete_exsting_data() {
+    if [[ "$deleteopt" ]]; then
+        echo 'Test setup: remove existing data'
+        rm -f /etc/pyff/*.fd
+        rm -rf /etc/pki/sign/*
+        rm -rf /var/md_source/*
+        rm -f /etc/pki/sign/*/metadata*
+        rm -f /home/pyff/.ssh/id_ed25519_*
+        rm -rf /var/md_feed/.git
+    fi
+}
+
+
 prepare_test_config_sw_cert() {
-    echo 'Test swcert setup 01: set test config and add metadata source data (not overwriting existing data)'
+    echo 'Test setup 01: set test config and add metadata source data (not overwriting existing data)'
     cp -np  /opt/testdata/etc/pki/tls/openssl.cnf /etc/pki/tls/
     cp -np  /opt/testdata/etc/pyff/* /etc/pyff/
     cp -npr /opt/testdata/md_source/*.xml /var/md_source/
@@ -29,13 +66,11 @@ prepare_test_config_sw_cert() {
     cp -pr /opt/testdata/etc/pyff/* /etc/pyff/
     cp -pr /opt/testdata/md_source/* /var/md_source/
 
-    # remove files from previous test runs
-    rm -f /etc/pki/sign/*/metadata*; rm -f /home/pyff/.ssh/id_ed25519_*; rm -rf /var/md_feed/.git
 }
 
 
 prepare_git_user() {
-    echo 'Test swcert setup 02: setup git user'
+    echo 'Test setup 02: setup git user'
     git config --global user.email "tester@testinetics.com"
     git config --global user.name "Unit Test"
     git config --global push.default simple
@@ -43,7 +78,7 @@ prepare_git_user() {
 
 
 prepare_mdfeed_repo() {
-    echo 'Test swcert setup 03: create local mdfeed repo'
+    echo 'Test setup 03: create local mdfeed repo'
     cd /var/md_feed
     git init > $LOGDIR/prepare_mdfeed_repo.log
     git add --all >> $LOGDIR/prepare_mdfeed_repo.log

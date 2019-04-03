@@ -25,7 +25,6 @@ services:
         - PIDFILE=/var/log/pyffd.pid
         - PIPELINEBATCH=/etc/pyff/md_swcert.fd
         - PIPELINEDAEMON=/etc/pyff/mdx_swcert.fd
-        - MDFEED_HOST=localhost
 
     #ports:
     #  - "8080:8080"
