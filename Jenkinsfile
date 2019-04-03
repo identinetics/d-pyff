@@ -47,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     echo 'Testing..'
-                    export REPO_HOST='localhost'  #  for ssh-config only, no test yet
+                    export MDFEED_HOST='localhost'  #  for ssh-config only, no test yet
                     docker-compose -f dc.yaml run --rm pyff /tests/test_all.sh
                 '''
             }

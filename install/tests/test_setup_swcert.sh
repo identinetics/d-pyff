@@ -60,7 +60,7 @@ create_sw_signing_cert() {
 
 
 create_git_ssh_keys() {
-    echo "Test setup 05: create SSH keys for access to $REPO_HOST"
+    echo "Test setup 05: create SSH keys for access to $MDFEED_HOST"
     /scripts/gen_sshkey.sh > $LOGDIR/test05.log
     head -4 $LOGDIR/test05.log > $LOGDIR/test05_top4.log
     /tests/assert_nodiff.sh $LOGDIR/test05_top4.log /opt/testdata/results/gen_sshkey/test05_top4.log

@@ -7,7 +7,7 @@ main() {
     block_root
     test_required_env_vars
     generate_sshkey
-    create_repo_host_alias
+    create_MDFEED_HOST_alias
     register_sshkey
 }
 
@@ -42,7 +42,7 @@ block_root() {
 
 
 test_required_env_vars() {
-    [[ -z $REPO_HOST ]] && echo "REPO_HOST not set" && exit 1
+    [[ -z $MDFEED_HOST ]] && echo "MDFEED_HOST not set" && exit 1
 }
 
 
@@ -53,13 +53,13 @@ generate_sshkey() {
 }
 
 
-create_repo_host_alias() {
+create_MDFEED_HOST_alias() {
     if [[ ! -z ${keyname+x} ]]; then
         touch ~/.ssh/config
         cat >> ~/.ssh/config << EOT
 
 Host ${keyname}
-Hostname $REPO_HOST
+Hostname $MDFEED_HOST
 IdentityFile /home/$(whoami)/.ssh/id_ed25519_${keyname}
 
 EOT
@@ -69,7 +69,7 @@ EOT
 
 
 register_sshkey() {
-    echo "created new public key - register with $REPO_HOST/$repo:"
+    echo "created new public key - register with $MDFEED_HOST/$repo:"
     if [[ -e ~/.ssh/id_ed25519_${keyname}.pub ]]; then
         cat ~/.ssh/id_ed25519_${keyname}.pub
     fi

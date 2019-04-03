@@ -7,8 +7,8 @@ git config --global push.default simple
 
 cd /var/md_feed
 
-echo "git clone $REPO_SSHUSER@$REPO_HOST:$MDFEED_REPO ."
-git clone $REPO_SSHUSER@$REPO_HOST:$MDFEED_REPO .
+echo "git clone $REPO_SSHUSER@$MDFEED_HOST:$MDFEED_REPO ."
+git clone $REPO_SSHUSER@$MDFEED_HOST:$MDFEED_REPO .
 cp -pr /opt/md_feed/* .
 git add --all
 git commit 'add html resources'
