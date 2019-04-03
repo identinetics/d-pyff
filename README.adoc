@@ -69,9 +69,8 @@ Functional enhancements to pyFF:
 . Environment variables
 |===
 |
-| MDSIGN_CERT | 
-| MDSIGN_KEY | 
-| MD_AGGREGATE | 
+| MDSIGN_CERT, MDSIGN_KEY | Key pair for metadata signing, must match pipeline definition (see md/mdx_swcert.fd)
+| MD_AGGREGATE | Output file defined in pipeline definition to be use as input for split operation (options -s
 | MDFEED_HOST |
 | MDFEED_SSHUSER | 
 | MDFEED_REPO | 
@@ -81,6 +80,10 @@ Functional enhancements to pyFF:
 | PIPELINEBATCH | 
 |===
 
+.Pileline configuration
+The pipeline configuration (/etc/pyff/*.fd) controls the selection of the input, processing, signing and output location.
+The "finalize" key needs to be adapted accoring to the federation policy.
+There might be multiple files, e.g. to separate files for IDPs, SPs and a combined aggregate.
 
 === Git Authentication
 If the git pull/push operations require authentication your need to provide a default ssh keypair
