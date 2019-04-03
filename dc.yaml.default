@@ -2,7 +2,7 @@ version: "3.5"
 services:
   pyff:
     build:
-        context: .
+      context: .
     image: local/pyff
     hostname: pyff
     labels:
@@ -25,6 +25,11 @@ services:
         - PIDFILE=/var/log/pyffd.pid
         - PIPELINEBATCH=/etc/pyff/md_swcert.fd
         - PIPELINEDAEMON=/etc/pyff/mdx_swcert.fd
+        - PYKCS11LIB=/usr/lib64/libsofthsm2.so
+        - PYKCS11PIN=Secret.1
+        - SOPIN=Secret.2
+        - HSMUSBDEVICE=Aladdin.Knowledge.Systems.Token.JC
+        - HSMP11DEVICE=eToken.5110
 
     #ports:
     #  - "8080:8080"
@@ -61,4 +66,3 @@ volumes:
       name: 03pyff.var_md_feed
     03pyff.var_md_source:
       name: 03pyff.var_md_source
-

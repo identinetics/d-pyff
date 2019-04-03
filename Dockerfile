@@ -16,7 +16,7 @@ RUN pip install six \
 # using more-itertools<6.0.0 because of SyntaxError mit more.py line 329
 RUN pip install babel future iso8601==0.1.9 'more-itertools<6.0.0' \
  && pip install lxml \
- && pip install pykcs11 parse
+ && pip install pykcs11 parse pytest
 
 #RUN pip install pykcs11==1.3.0 # using pykcs11 1.3.0 because of missing wrapper in v 1.3.1 - tested with 1.4.2: OK
 # use leifj's fork of pykcs11
@@ -67,9 +67,8 @@ RUN ln -sf /dev/stdout /var/log/pyff_batch.log \
 
 COPY install/testdata /opt/testdata
 COPY install/testdata/etc/pki/tls/openssl.cnf /opt/testdata/etc/pki/tls/
-COPY install/scripts/* /scripts/
-COPY install/tests/* /tests/
-COPY VERSION /opt/VERSION
+COPY install/scripts/ /scripts/
+COPY install/tests/ /tests/
 
 # Application will run as a non-root user
 # DAC Permission strategy: group 0 & no group access for private directories
@@ -77,7 +76,7 @@ ARG USERNAME=pyff
 ARG UID=343003
 ENV GID=0
 RUN adduser -g $GID -u $UID $USERNAME \
- && chmod +x /scripts/* /tests/* \
+ && chmod -R +x /scripts/* /tests/* \
  && chmod -R 700 $(find /opt -type d) \
  && chown -R $UID:$GID /opt \
  && mkdir -p /etc/sudoers.d \
@@ -107,7 +106,6 @@ RUN yum -y install gtk2 xdg-utils \
  && yum clean all
 ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 
-EXPOSE 8080
 
 # For development/debugging - map port in config and start sshd with /start_sshd.sh
 #RUN yum -y install openssh-server \
@@ -122,8 +120,14 @@ EXPOSE 8080
 #VOLUME /etc/sshd
 #EXPOSE 2022
 
+#create /ramdisk creation for certs - not required for unit tests
+RUN mkdir -p /ramdisk \
+ && mkdir /tests/.pytest_cache \
+ && chown pyff /ramdisk /tests/.pytest_cache
+
 # create manitest for automatic build number generation
 USER $USERNAME
 COPY install/opt/bin/manifest2.sh /opt/bin/manifest2.sh
 
+EXPOSE 8080
 CMD ["/scripts/start_pyffd.sh"]

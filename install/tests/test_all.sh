@@ -3,7 +3,7 @@
 # This is a simplified approach to unit test. To avoid dependencies to test automation frameworks,
 # the chosed approach is to stop testing at the first failure.
 
-set -e
+set +e
 
 export USERPIN=$PYKCS11PIN
 export PKCS11_CARD_DRIVER=$PYKCS11LIB
@@ -22,10 +22,8 @@ echo; echo '=== start_pkcs11_services.sh ==='
 
 HSMUSBDEVICE='Aladdin Knowledge Systems Token JC'  # output of lsusb
 HSMP11DEVICE='eToken 5110'                         # output of pkcs11-tool --list-token-slots
-set +e
 lsusb | grep "$HSMUSBDEVICE"
 rc=$?
-set -e
 if (( $rc > 0 )); then
     # echo; echo 'HSM USB Device $HSMUSBDEVICE not found'
     # exit 0
@@ -35,7 +33,7 @@ if (( $rc > 0 )); then
     echo '=== All tests completed with SoftHSM ==='
 else
     echo; echo '=== test_hsm_eToken.sh ==='
-    /tests/test_hsm_eToken.sh
+    pytest /tests/test_hsm.py
     echo; echo '=== test_pyff.sh (Aggregator) with HSM eToken ==='
     export PIPELINEBATCH=/etc/pyff/md_hsm_eToken.fd
     /tests/test_pyff.sh

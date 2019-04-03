@@ -12,13 +12,13 @@ main() {
 
 
 get_commandline_args() {
-    while getopts ":c:dik:n:p:s:t:v" opt; do
+    while getopts ":c:dik:l:n:p:s:t:v" opt; do
       case $opt in
         c) CERT=$OPTARG;;
         d) DRYRUN='True'; verbose="True";;
         k) PRIVKEY=$OPTARG;;
         i) INIT='True';;
-        l) CERTLABELOPT="-l $OPTARG";;
+        l) CERTLABELOPT="--label $OPTARG";;
         n) TOKENLABEL=$OPTARG;;
         p) PKCS11_CARD_DRIVER=$OPTARG;;
         s) SOPIN=$OPTARG;;
