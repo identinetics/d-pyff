@@ -1,5 +1,5 @@
 - load:
-  - ../testdata/md_source
+   - /var/md_source
 - select
 - xslt:
     stylesheet: tidy.xsl
