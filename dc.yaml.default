@@ -12,7 +12,8 @@ services:
         - FREQUENCY=600
         - LANG=de
         - LOGDIR=/var/log
-        - LOGLEVEL=INFO
+        # this version of pyff is too silent and does not output error conditions on level >= INFO:
+        - LOGLEVEL=DEBUG
         - MDSIGN_CERT=/etc/pki/sign/certs/metadata_crt.pem
         - MDSIGN_KEY=/etc/pki/sign/private/metadata_key.pem
         - MD_AGGREGATE=/var/md_feed/metadata.xml
@@ -48,7 +49,6 @@ networks:
   jenkins:
     name: jenkins
 
-volumes:
 volumes:
     03pyff.etc_pki_sign:
       name: 03pyff.etc_pki_sign
