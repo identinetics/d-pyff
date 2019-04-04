@@ -57,7 +57,7 @@ Other elements in the docker-compose configuration to be adpapted are:
 * image (control deployed version with the tag value)
 * networks
 
-=== Aggregator running in batch mode (pyff)
+=== pyff (Aggregator))
 
 Functional enhancements to pyFF:
 - Commit generated aggregate to git repo
@@ -66,9 +66,9 @@ Functional enhancements to pyFF:
 
 === Configuration
 
-. Environment variables
+. Environment variables (independend of signing mechanism)
+[cols="2,4"]
 |===
-|
 | MDSIGN_CERT, MDSIGN_KEY | Key pair for metadata signing, must match pipeline definition (see md/mdx_swcert.fd)
 | MD_AGGREGATE | Output file defined in pipeline definition to be use as input for split operation (options -s
 | MDFEED_HOST |
@@ -78,6 +78,19 @@ Functional enhancements to pyFF:
 | MDSPLIT_SIGNED | 
 | PIDFILE | 
 | PIPELINEBATCH | 
+|===
+
+. Environment variables (using PKCS11 device for signing)
+[cols="2,4"]
+|===
+| HSMUSBDEVICE |
+| HSMP11DEVICE | 
+| P11KIT_DESC | 
+| PYKCS11LIB | 
+| PKCS11_CARD_DRIVER | 
+| PYKCS11PIN | 
+| SOFTHSM | Set to True to use SoftHSM; otherwise an error is raised if the HSM is not found
+| SOPIN | HSM Security Officer PIN
 |===
 
 .Pileline configuration
@@ -115,7 +128,7 @@ Config the key name in md_aggregate_sign.fd to match the key name on the HSM.
 Provide the PYKCS11PIN env variable if using the HSM.
 
 
-=== IDP discovery and MDQ service (pyffd)
+=== pyffd (IDP discovery service)
 
 pyffd needs a pipeline definition (e.g. /opt/testdata/etc/pyff/mdx_softhsm.fd) and
 key material either as sw-certificate or PKCS11 device.

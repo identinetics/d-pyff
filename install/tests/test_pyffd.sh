@@ -6,7 +6,7 @@ LOGDIR="/tmp/${SCRIPT%.*}"
 mkdir -p $LOGDIR
 echo "    Logfiles in $LOGDIR"
 
-set -e
+set +e
 
 # test 10
 echo 'Test 10: starting pyffd and expecting html response'

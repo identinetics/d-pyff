@@ -4,6 +4,10 @@ import subprocess
 from pathlib2 import Path
 
 import pytest
+''' Test with PKCS11 device. If SOFTHSM is set and the configured HSM device is not found, fall back to SoftHSM 
+    Test pattern with command-lie interface: invoke shell script with same name (-> inspect.stack()[0][3]) as subprocess.
+    This allows for 1:1 testablity of bash-level commands and pytest
+'''
 
 @pytest.fixture()
 def shellscriptdir():

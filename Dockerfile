@@ -9,58 +9,11 @@ RUN yum -y update \
 
 # use easy_install, solves install bug
 # InsecurePlatformWarning can be ignored - this system does not use TLS
-RUN pip install six \
- && easy_install --upgrade six \
- && pip install importlib
-# using iso8601 0.1.9 because of str/int compare bug in pyff;
-# using more-itertools<6.0.0 because of SyntaxError mit more.py line 329
-RUN pip install babel future iso8601==0.1.9 'more-itertools<6.0.0' \
- && pip install lxml \
- && pip install pykcs11 parse pytest
+RUN pip3 install pytest
 
-#RUN pip install pykcs11==1.3.0 # using pykcs11 1.3.0 because of missing wrapper in v 1.3.1 - tested with 1.4.2: OK
-# use leifj's fork of pykcs11
-#ENV repodir='/opt/source/PyKCS11'
-#ENV repourl='https://github.com/leifj/PyKCS11'
-#RUN mkdir -p $repodir && cd $repodir \
-# && git clone $repourl . \
-# && python setup.py install
-
-# install Shibboleth XMLSECTOOL used in pyffsplit.sh (requires JRE, but installing JDK because of /etc/alternatives support)
-# --- XMLSECTOOL ---
-ENV version='2.0.0'
-RUN mkdir -p /opt && cd /opt \
- && wget -q "https://shibboleth.net/downloads/tools/xmlsectool/${version}/xmlsectool-${version}-bin.zip" \
- && unzip "xmlsectool-${version}-bin.zip" \
- && ln -s "xmlsectool-${version}" 'xmlsectool-2' \
- && rm "xmlsectool-${version}-bin.zip" \
- && yum -y install java-1.8.0-openjdk-devel.x86_64 \
- && yum clean all
-ENV JAVA_HOME=/etc/alternatives/jre_1.8.0_openjdk
-ENV XMLSECTOOL=/opt/xmlsectool-2/xmlsectool.sh
-
-# changed defaults for c14n, digest & signing alg - used rhoerbe fork
-ENV repodir='/opt/source/pyXMLSecurity'
-ENV repourl='https://github.com/rhoerbe/pyXMLSecurity'
-# the branch has patches for sig/digest als and unlabeld privated keys in HSM
-ENV repobranch='rh_fork'
-RUN mkdir -p $repodir && cd $repodir \
- && git clone $repourl . \
- && git checkout $repobranch \
- && python setup.py install
-
-# mdsplit function has not been pushed upstream yet - used rhoerbe fork
-# auto-installing  Cherry-Py dependency failed with 7.1.0 (UnicodeDecodeError)
-RUN pip install 'cherrypy<18.0.0'
 COPY install/opt/pyFF /opt/source/pyff/
 RUN cd /opt/source/pyff/ && python setup.py install
-#ENV repodir='/opt/source/pyff'
-#ENV repourl='https://github.com/identinetics/pyFF'
-#RUN mkdir -p $repodir && cd $repodir \
-# && git clone $repourl . \
-# && git checkout i18n \
-# && python setup.py compile_catalog \
-# && python setup.py install
+
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/pyff_batch.log \
  && ln -sf /dev/stderr /var/log/pyff_batch.error
@@ -106,24 +59,10 @@ RUN yum -y install gtk2 xdg-utils \
  && yum clean all
 ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 
-
-# For development/debugging - map port in config and start sshd with /start_sshd.sh
-#RUN yum -y install openssh-server \
-# && yum clean all \
-# && echo changeit | passwd -f --stdin $USERNAME \
-# && echo changeit | passwd -f --stdin root \
-# && echo 'GSSAPIAuthentication no' >> /etc/ssh/sshd_config \
-# && echo 'useDNS no' >> /etc/ssh/sshd_config \
-# && rm -f /etc/ssh/ssh_host_*_key  # generate on first container start, not in image
-#COPY dscripts/templates/install/scripts/start_sshd.sh /
-#RUN chmod +x /start_sshd.sh
-#VOLUME /etc/sshd
-#EXPOSE 2022
-
 #create /ramdisk creation for certs - not required for unit tests
 RUN mkdir -p /ramdisk \
- && mkdir /tests/.pytest_cache \
- && chown pyff /ramdisk /tests/.pytest_cache
+ && mkdir /.pytest_cache \
+ && chown pyff /ramdisk /.pytest_cache
 
 # create manitest for automatic build number generation
 USER $USERNAME
