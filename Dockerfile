@@ -60,8 +60,7 @@ RUN yum -y install gtk2 xdg-utils \
 ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 
 #create /ramdisk creation for certs - not required for unit tests
-RUN mkdir -p /ramdisk \
- && mkdir /.pytest_cache \
+RUN mkdir -p /ramdisk /.pytest_cache \
  && chown pyff /ramdisk /.pytest_cache
 
 # create manitest for automatic build number generation
