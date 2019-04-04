@@ -27,10 +27,11 @@ services:
         - PIPELINEDAEMON=/etc/pyff/mdx_swcert.fd
         - SOFTHSM
         - PYKCS11LIB=/usr/lib64/libsofthsm2.so
-        - PYKCS11PIN=Secret.1
-        - SOPIN=Secret.2
-        - HSMUSBDEVICE=Aladdin.Knowledge.Systems.Token.JC
-        - HSMP11DEVICE=eToken.5110
+        #- PYKCS11LIB=/usr/lib64/libetvTokenEngine.so
+        #- PYKCS11PIN=Secret.1
+        #- SOPIN=Secret.2
+        #- HSMUSBDEVICE=Aladdin.Knowledge.Systems.Token.JC
+        #- HSMP11DEVICE=eToken.5110
 
     #ports:
     #  - "8080:8080"

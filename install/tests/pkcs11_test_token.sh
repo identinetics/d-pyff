@@ -63,7 +63,7 @@ show_pkcs11_info() {
 run_pykcs11() {
     export PYKCS11LIB=$PKCS11_CARD_DRIVER
     SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-    python $SCRIPTDIR/pykcs11_getinfo.py
+    python /tests/pykcs11_getinfo.py -s 0 -m
 }
 
 

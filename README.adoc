@@ -71,30 +71,27 @@ Functional enhancements to pyFF:
 |===
 | MDSIGN_CERT, MDSIGN_KEY | Key pair for metadata signing, must match pipeline definition (see md/mdx_swcert.fd)
 | MD_AGGREGATE | Output file defined in pipeline definition to be use as input for split operation (options -s
-| MDFEED_HOST |
-| MDFEED_SSHUSER | 
-| MDFEED_REPO | 
-| MDSPLIT_UNSIGNED | 
-| MDSPLIT_SIGNED | 
-| PIDFILE | 
-| PIPELINEBATCH | 
+| MDFEED_HOST MDFEED_REPO MDFEED_SSHUSER | Access to output Repo whan using pyff_aggregate.sh -g
+| MDSPLIT_UNSIGNED | Directory where mdsplit will store unsigned EntityDescriptor files
+| MDSPLIT_SIGNED | Directory where mdsplit will store signed EntityDescriptor files
+| PIPELINEBATCH | Aggregator configuration (by default in /etc/pyff)
 |===
 
 . Environment variables (using PKCS11 device for signing)
 [cols="2,4"]
 |===
-| HSMUSBDEVICE |
-| HSMP11DEVICE | 
-| P11KIT_DESC | 
-| PYKCS11LIB | 
-| PKCS11_CARD_DRIVER | 
-| PYKCS11PIN | 
+| HSMUSBDEVICE | Name of device used as regex to match output from lsusb (replace blanks wih '.'). E.g. 'Aladdin.Knowledge.Systems.Token.JC'
+| HSMP11DEVICE | Name of device slot in Cryptoki Library, with blanks replaced by '.' (e.g.'eToken.5110')
+| P11KIT_DESC | Name of Device in p11.kit (rquired for test script)
+| PYKCS11LIB | Driver for HSM token
+| PKCS11_CARD_DRIVER | same as PYKCS11LIB
+| PYKCS11PIN | HSM user PIN
 | SOFTHSM | Set to True to use SoftHSM; otherwise an error is raised if the HSM is not found
 | SOPIN | HSM Security Officer PIN
 |===
 
-.Pileline configuration
-The pipeline configuration (/etc/pyff/*.fd) controls the selection of the input, processing, signing and output location.
+.Aggregator configuration
+The aggregator configuration (/etc/pyff/*.fd) controls the selection of the input, processing, signing and output location.
 The "finalize" key needs to be adapted accoring to the federation policy.
 There might be multiple files, e.g. to separate files for IDPs, SPs and a combined aggregate.
 
@@ -107,19 +104,19 @@ and register it with Github (Gitlab, ..) in the home directory of the container 
     # add ~/.ssh/id_ed25519.pub as a deploy key with write access to the remote repo
     ssh -T git@github.com  # validate that the github key fingerprint is valid
     git config --global push.default simple
-     
+
 === Run aggregator
 
 Start pyff:
- 
+
     # see exec_pyff_batch.sh -h for options with per-entity-descriptor outpout and git integration
     ./exec_pyff_batch.sh
 
 Sample entry for /etc/crontab to run pyff every hour:
 
     29 *  *  *  *  root /docker_images/pyff/exec_pyff_batch.sh 2>&1 > /var/log/exec_pyff_batch.log
-   
-    
+
+
 == HSM/pyFF config
 
 Config the key name in md_aggregate_sign.fd to match the key name on the HSM.
@@ -141,10 +138,10 @@ Configure environment variables in dc.yaml and start the daemon:
 
 . Environment variables
 |===
-| MDSIGN_CERT |
-| MDSIGN_KEY |
-| FREQUENCY |
-| PIPELINEDAEMON |
+| MDSIGN_CERT, MDSIGN_KEY | Key pair for metadata signing, must match pipeline definition (see md/mdx_swcert.fd)
+| FREQUENCY | refresh metadata interval
+| PIDFILE | pid of pyffd
+| PIPELINEDAEMON | pyffd configuration file
 |===
 
 

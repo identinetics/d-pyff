@@ -112,30 +112,28 @@ def test_create_and_upload_cert(shellscriptdir, testenv):
 
 
 def test_list_certificates_on_hsm(shellscriptdir, testenv):
-    #cmd = ['/usr/bin/pkcs11-tool',
-    #       '--module', testenv['PYKCS11LIB'],
-    #       '--list-objects', '--type', 'cert',
-    #       '--login', '--pin', testenv['PYKCS11PIN'],
-    #       '|', 'grep', 'Certificate Object"',
-    #       ]
-    #rc = subprocess.call(cmd, shell=False, env=testenv)
-    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
+    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
     if rc:
         raise Exception(inspect.stack()[0][3] + ' failed. No certificate found.')
 
 
 def test_list_private_keys_on_hsm(shellscriptdir, testenv):
-    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
+    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
     if rc:
         raise Exception(inspect.stack()[0][3] + ' failed. No key found.')
 
 
 def test_sign_with_hsm(shellscriptdir, testenv):
-    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
+    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
     if rc:
         raise Exception(inspect.stack()[0][3] + ' failed with code = ' + str(rc))
 
 
+def test_pykcs11_list_all(shellscriptdir, testenv):
+    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
+    rc = subprocess.call([s], shell=True, env=testenv)
+    if rc:
+        raise Exception(inspect.stack()[0][3] + ' failed with code = ' + str(rc))
