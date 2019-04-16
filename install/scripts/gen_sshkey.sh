@@ -16,7 +16,7 @@ get_commandline_opts() {
     while getopts ":hdn:" opt; do
       case $opt in
         d) dryrun='True';;
-        n) keyname=$OPTARG;;
+        n) keyname="_$OPTARG";;
         :) echo "Option -$OPTARG requires an argument"; exit 1;;
         *) usage; exit 1;;
       esac
@@ -48,7 +48,7 @@ test_required_env_vars() {
 
 generate_sshkey() {
     if [[ ! -e ~/.ssh/id_ed25519 ]] && [[ "$dryrun" != 'True' ]]; then
-        ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_${keyname} -N ''
+        ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519${keyname} -N ''
     fi
 }
 
@@ -60,7 +60,7 @@ create_MDFEED_HOST_alias() {
 
 Host ${keyname}
 Hostname $MDFEED_HOST
-IdentityFile /home/$(whoami)/.ssh/id_ed25519_${keyname}
+IdentityFile /home/$(whoami)/.ssh/id_ed25519${keyname}
 
 EOT
         chmod 600 /home/$(whoami)/.ssh/config
@@ -70,8 +70,8 @@ EOT
 
 register_sshkey() {
     echo "created new public key - register with $MDFEED_HOST/$repo:"
-    if [[ -e ~/.ssh/id_ed25519_${keyname}.pub ]]; then
-        cat ~/.ssh/id_ed25519_${keyname}.pub
+    if [[ -e ~/.ssh/id_ed25519${keyname}.pub ]]; then
+        cat ~/.ssh/id_ed25519${keyname}.pub
     fi
 }
 

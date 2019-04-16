@@ -4,52 +4,26 @@ services:
     build:
       context: .
     image: local/pyff
-    hostname: pyff
+    container_name: pyff
     labels:
       x.service: MD_Aggr/IDP_Disco
     restart: unless-stopped
-    environment:
-        - FREQUENCY=600
-        - LANG=de
-        - LOGDIR=/var/log
-        # this version of pyff is too silent and does not output error conditions on level >= INFO:
-        - LOGLEVEL=DEBUG
-        - MDSIGN_CERT=/etc/pki/sign/certs/metadata_crt.pem
-        - MDSIGN_KEY=/etc/pki/sign/private/metadata_key.pem
-        - MD_AGGREGATE=/var/md_feed/metadata.xml
-        - MDFEED_HOST=github.com
-        - MDFEED_SSHUSER=git
-        - MDFEED_REPO=myaccount/mdfeedMydomainOrg
-        - MDSPLIT_UNSIGNED=/var/md_source/entities
-        - MDSPLIT_SIGNED=/var/md_feed/entities
-        - PIDFILE=/var/log/pyffd.pid
-        - PIPELINEBATCH=/etc/pyff/md_swcert.fd
-        - PIPELINEDAEMON=/etc/pyff/mdx_swcert.fd
-        - SOFTHSM
-        - PYKCS11LIB=/usr/lib64/libsofthsm2.so
-        #- PYKCS11LIB=/usr/lib64/libetvTokenEngine.so
-        #- PYKCS11PIN=Secret.1
-        #- SOPIN=Secret.2
-        #- HSMUSBDEVICE=Aladdin.Knowledge.Systems.Token.JC
-        #- HSMP11DEVICE=eToken.5110
-
+    env_file:
+      - ./env
     #ports:
     #  - "8080:8080"
     networks:
       jenkins:
     volumes:
-        - 03pyff.etc_pki_sign:/etc/pki/sign:Z
-        - 03pyff.etc_pyff:/etc/pyff:Z
-        - 03pyff.home_pyff_ssh:/home/pyff/.ssh:Z
-        - 03pyff.var_log:/var/log:Z
-        - 03pyff.var_md_feed:/var/md_feed:z
-        - 03pyff.var_md_source:/var/md_source
+      - 03pyff.etc_pki_sign:/etc/pki/sign:Z
+      - 03pyff.etc_pyff:/etc/pyff:Z
+      - 03pyff.home_pyff_ssh:/home/pyff/.ssh:Z
+      - 03pyff.var_log:/var/log:Z
+      - 03pyff.var_md_feed:/var/md_feed:z
+      - 03pyff.var_md_source:/var/md_source
     privileged: true
     devices:
       - "/dev/bus/usb"
-
-    cap_drop:
-      - ALL
 
 networks:
   jenkins:

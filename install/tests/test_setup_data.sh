@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+if [[ "$BASH_TRACE" ]]; then
+    set -xv
+    PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+fi
+
 
 main() {
     check_root
@@ -6,7 +11,7 @@ main() {
     setup_logging
     delete_exsting_data
     prepare_test_config_sw_cert
-    prepare_git_user
+    prepare_mdsource
     prepare_mdfeed_repo
     create_sw_signing_cert
     create_git_ssh_keys
@@ -48,7 +53,7 @@ delete_exsting_data() {
     if [[ "$deleteopt" ]]; then
         echo 'Test setup: remove existing data'
         rm -f /etc/pyff/*.fd
-        rm -rf /etc/pki/sign/*
+        rm -rf /etc/pki/sign/* /ramdisk/*
         rm -rf /var/md_source/*
         rm -f /etc/pki/sign/*/metadata*
         rm -f /home/pyff/.ssh/id_ed25519_*
@@ -62,29 +67,27 @@ prepare_test_config_sw_cert() {
     cp -np  /opt/testdata/etc/pki/tls/openssl.cnf /etc/pki/tls/
     cp -np  /opt/testdata/etc/pyff/* /etc/pyff/
     cp -npr /opt/testdata/md_source/*.xml /var/md_source/
-    #cp -pr /opt/testdata/etc/pki/sign/* /etc/pki/sign/  created in test 04
+    cp -pr /opt/testdata/etc/pki/sign/* /etc/pki/sign/
     cp -pr /opt/testdata/etc/pyff/* /etc/pyff/
     cp -pr /opt/testdata/md_source/* /var/md_source/
 
 }
 
 
-prepare_git_user() {
-    echo 'Test setup 02: setup git user'
-    git config --global user.email "tester@testinetics.com"
-    git config --global user.name "Unit Test"
-    git config --global push.default simple
-}
-
-
 prepare_mdfeed_repo() {
     echo 'Test setup 03: create local mdfeed repo'
+
     cd /var/md_feed
     git init > $LOGDIR/prepare_mdfeed_repo.log
     git add --all >> $LOGDIR/prepare_mdfeed_repo.log
     touch .gitignore
     git add .gitignore
     git commit -m 'empty' >> $LOGDIR/prepare_mdfeed_repo.log
+}
+
+
+prepare_mdsource() {
+    cp -prn /opt/testdata/md_source /var/md_source
 }
 
 
@@ -99,7 +102,7 @@ create_git_ssh_keys() {
         echo "Test setup 05: skip"
     else
         echo "Test setup 05: create SSH keys for access to $MDFEED_HOST"
-        rm -f /home/pyff/.ssh/id_ed25519*
+        rm -f /home/$(whoami)/.ssh/id_ed25519*
         /scripts/gen_sshkey.sh > $LOGDIR/test05.log
         head -4 $LOGDIR/test05.log > $LOGDIR/test05_top4.log
         /tests/assert_nodiff.sh $LOGDIR/test05_top4.log /opt/testdata/results/gen_sshkey/test05_top4.log

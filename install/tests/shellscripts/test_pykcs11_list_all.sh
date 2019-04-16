@@ -8,5 +8,5 @@ if (( $obj_count != 2 )); then
     echo " .. ERROR: Expected 2 objects in HSM token, but listed ${obj_count}"
     exit 1
 else
-    log_newline " .. OK"
+    echo " .. OK"
 fi

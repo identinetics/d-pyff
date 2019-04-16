@@ -1,13 +1,17 @@
 import inspect
 import os
 import subprocess
-from pathlib2 import Path
+import sys
+from pathlib import Path
 
 import pytest
 ''' Test with PKCS11 device. If SOFTHSM is set and the configured HSM device is not found, fall back to SoftHSM 
     Test pattern with command-lie interface: invoke shell script with same name (-> inspect.stack()[0][3]) as subprocess.
     This allows for 1:1 testablity of bash-level commands and pytest
 '''
+
+if sys.version_info[0] < 3:
+    raise Exception("Must be using Python 3")
 
 @pytest.fixture()
 def shellscriptdir():
@@ -31,10 +35,10 @@ def testenv():
     copy_env_key(test_env, 'SOPIN')
     copy_env_key(test_env, 'SOFTHSM')
     copy_env_key(test_env, 'LOGDIR')
-    copy_env_key(test_env, 'LOGFILE')
     return test_env
 
 
+@pytest.mark.hsm
 def test_detect_HSM_USB_device(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
     rc = subprocess.call([s], shell=True, env=testenv)
@@ -47,16 +51,21 @@ def test_pkcs11_env_settings(testenv):
     assert Path(testenv['PYKCS11LIB']).is_file()
     assert testenv['PYKCS11PIN']
     assert testenv['SOPIN']
+
+
+@pytest.mark.hsm
+def test_pkcs11_env_settings_hsm(testenv):
     assert testenv['HSMUSBDEVICE']
     assert testenv['HSMP11DEVICE']
 
 
+@pytest.mark.hsm
 def test_pcscd_up():
     rc = subprocess.call(['/usr/sbin/pidof', '/usr/sbin/pcscd'], shell=False)
     if rc:
         raise Exception('/usr/sbin/pcscd not running')
 
-
+@pytest.mark.hsm
 def test_list_pkcs11_token_slots(testenv):
     cmd = ['/usr/bin/pkcs11-tool',
            '--module', testenv['PYKCS11LIB'],
@@ -124,7 +133,7 @@ def test_list_private_keys_on_hsm(shellscriptdir, testenv):
     if rc:
         raise Exception(inspect.stack()[0][3] + ' failed. No key found.')
 
-
+@pytest.mark.hsm
 def test_sign_with_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)

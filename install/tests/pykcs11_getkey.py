@@ -86,7 +86,7 @@ class GetInfo(object):
 
 
     def getKeyInfo(self):
-        label = 'test'
+        label = 'mdsign'
         #template = [(CKA_LABEL, label), (CKA_CLASS, CKO_PRIVATE_KEY), (CKA_KEY_TYPE, CKK_RSA)]
         token_objects = self.session.findObjects()
         print('Reading %s token objects' % len(token_objects))

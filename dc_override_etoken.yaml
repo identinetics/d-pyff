@@ -1,0 +1,12 @@
+version: "3.5"
+services:
+  pyff:
+    environment:
+      - PYKCS11LIB=/usr/lib64/libetvTokenEngine.so
+      - PYKCS11PIN=Secret.1
+      - SOPIN=Secret.2
+      - HSMUSBDEVICE=Aladdin.Knowledge.Systems.Token.JC
+      - HSMP11DEVICE=eToken.5110
+      # compose config overrules environment file
+      - PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
+      - PIPELINEDAEMON=/etc/pyff/mdx_hsm_eToken.fd

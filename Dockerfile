@@ -4,19 +4,44 @@ RUN yum -y update \
  && yum -y install logrotate sudo sysvinit-tools wget xmlstarlet \
  && yum -y install usbutils gcc gcc-c++ git redhat-lsb-core \
                    opensc pcsc-lite engine_pkcs11 gnutls-utils softhsm unzip \
- && yum -y install python-pip python-devel libxslt-devel swig \
+ && yum -y install python-pip python-devel python-jinja2 libxslt-devel swig \
  && yum clean all
 
-# use easy_install, solves install bug
-# InsecurePlatformWarning can be ignored - this system does not use TLS
+# python3 currently used only for manifest generation; pyff is on 2.7
 RUN pip3 install pytest
 
 COPY install/opt/pyFF /opt/source/pyff/
-RUN cd /opt/source/pyff/ && python setup.py install
+RUN pip install setuptools --upgrade \
+ && pip install pykcs11
+
+# changed defaults for c14n, digest & signing alg - used rhoerbe fork
+ENV repodir='/opt/source/pyXMLSecurity'
+ENV repourl='https://github.com/rhoerbe/pyXMLSecurity'
+# the branch has patches for sig/digest als and unlabeld privated keys in HSM
+ENV repobranch='rh_fork'
+RUN mkdir -p $repodir && cd $repodir \
+ && git clone $repourl . \
+ && git checkout $repobranch \
+ && python setup.py install
+
+RUN pip install /opt/source/pyff
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/pyff_batch.log \
  && ln -sf /dev/stderr /var/log/pyff_batch.error
+
+# install Shibboleth XMLSECTOOL used in pyffsplit.sh (requires JRE, but installing JDK because of /etc/alternatives support)
+# --- XMLSECTOOL ---
+ENV version='2.0.0'
+RUN mkdir -p /opt && cd /opt \
+ && wget -q "https://shibboleth.net/downloads/tools/xmlsectool/${version}/xmlsectool-${version}-bin.zip" \
+ && unzip "xmlsectool-${version}-bin.zip" \
+ && ln -s "xmlsectool-${version}" 'xmlsectool-2' \
+ && rm "xmlsectool-${version}-bin.zip" \
+ && yum -y install java-1.8.0-openjdk-devel.x86_64 \
+ && yum clean all
+ENV JAVA_HOME=/etc/alternatives/jre_1.8.0_openjdk
+ENV XMLSECTOOL=/opt/xmlsectool-2/xmlsectool.sh
 
 COPY install/testdata /opt/testdata
 COPY install/testdata/etc/pki/tls/openssl.cnf /opt/testdata/etc/pki/tls/

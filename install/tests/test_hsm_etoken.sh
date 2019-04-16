@@ -102,9 +102,9 @@ run_tests() {
     #=============
     testid=14
     test_purpose='Initializing HSM Token '
-    test_cmd="pkcs11-tool --module $PYKCS11LIB --init-token --label test --so-pin $SOPIN"
+    test_cmd="pkcs11-tool --module $PYKCS11LIB --init-token --label mdsign --so-pin $SOPIN"
     log_test_header
-    pkcs11-tool --module $PYKCS11LIB --init-token --label test --so-pin $SOPIN \
+    pkcs11-tool --module $PYKCS11LIB --init-token --label mdsign --so-pin $SOPIN \
         > $LOGDIR/test${testid}.log 2>&1
     if (( $? > 0 )); then
         log_newline " .. ERROR: HSM Token not initialized, failed with code $?"
@@ -167,7 +167,7 @@ run_tests() {
     #=============
     testid=17
     test_purpose='write certificate + private key to HSM '
-    test_cmd="/scripts/pkcs11_key_to_token.sh -c /ramdisk/testcert_crt.der -k /ramdisk/testcert_key.der -l mdsign -n test -s $SOPIN -t $PYKCS11PIN"
+    test_cmd="/scripts/pkcs11_key_to_token.sh -c /ramdisk/testcert_crt.der -k /ramdisk/testcert_key.der -l mdsign -n mdsign -s $SOPIN -t $PYKCS11PIN"
     log_test_header
     /scripts/pkcs11_key_to_token.sh -c /ramdisk/testcert_crt.der -k /ramdisk/testcert_key.der \
         -l mdsign -n test -s $SOPIN -t $PYKCS11PIN > $LOGDIR/test${testid}.log 2>&1

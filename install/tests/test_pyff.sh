@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+if [[ "$BASH_TRACE" ]]; then
+    set -xv
+    PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+fi
+
 
 SCRIPT=$(basename $0)
 SCRIPT=${SCRIPT%.*}
