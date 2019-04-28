@@ -1,5 +1,10 @@
 #!/bin/bash
 
+main() {
+    create_sw_certificate_on_ramdisk
+    write_certificate_and_private_key_to_hsm
+}
+
 
 create_sw_certificate_on_ramdisk() {
     rm -f /ramdisk/*
@@ -11,9 +16,10 @@ create_sw_certificate_on_ramdisk() {
     fi
 }
 
+
 write_certificate_and_private_key_to_hsm() {
     /scripts/pkcs11_key_to_token.sh -c /ramdisk/testcert_crt.der -k /ramdisk/testcert_key.der \
-        -l mdsign -n test -s $SOPIN -t $PYKCS11PIN
+        -l sigkey-citest -n mdsign-token-citest -s $SOPIN -t $PYKCS11PIN
     if (( $? > 0 )); then
         echo "ERROR: Writing key and certificate to HSM token failed with code=$?" 1>&2
         exit 1
@@ -21,5 +27,4 @@ write_certificate_and_private_key_to_hsm() {
 }
 
 
-create_sw_certificate_on_ramdisk
-write_certificate_and_private_key_to_hsm
+main $@

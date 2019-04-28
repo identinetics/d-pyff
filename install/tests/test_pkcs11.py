@@ -80,7 +80,7 @@ def test_initialize_hsm_token(testenv):
     cmd = ['/usr/bin/pkcs11-tool',
            '--module', testenv['PYKCS11LIB'],
            '--init-token',
-           '--label', 'test',
+           '--label', 'mdsign-token-citest',
            '--so-pin', testenv['SOPIN'],
     ]
     rc = subprocess.call(cmd, shell=False, env=testenv)

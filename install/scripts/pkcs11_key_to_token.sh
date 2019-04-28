@@ -51,7 +51,7 @@ usage() {
           -i  initialize token before writing key
           -k  Private key file
           -l  Certificate/private key label
-          -n  Token Name
+          -n  Token label
           -s  Security Officer PIN
           -p  Path to library of PKCS#11 driver (default: $PKCS11_CARD_DRIVER)
           -t  User PIN

@@ -4,13 +4,17 @@
 - xslt:
     stylesheet: tidy.xsl
 - store: 
-     directory: /tmp/
+    directory: /tmp/
 - finalize:
-     cacheDuration: PT4H
-     validUntil: P10D
-     ID: your_metadatafeed_prefix_
+    cacheDuration: PT4H
+    validUntil: P10D
+    ID: your_metadatafeed_prefix_
 - sign:
-    # the last part of the "URI" is the key name on the eToken
-    key: pkcs11:///usr/lib64/libeToken.so/mdsign
-    # Token PW from ENV PYKCS11PIN
+    # This PKCS11 URI comprises scheme, pkcs11-lib file path and token:
+    # scheme:  pkcs11://
+    # pkcs11-lib path: absolute path, e.g. /usr/lib64/libeToken.so
+    # token: "label" member of the CK_TOKEN_INFO structure as UTF-8 string,
+    #        e.g. mdsign-token-prod (do not use the key label (CKA_LABEL)!)
+    key: pkcs11:///usr/lib64/libeToken.so/mdsign-token-citest
+    # Token PW injected from environment variable PYKCS11PIN
 - publish: /var/md_feed/metadata_hsm.xml
