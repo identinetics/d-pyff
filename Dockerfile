@@ -14,7 +14,7 @@ COPY install/opt/pyFF /opt/source/pyff/
 RUN pip install setuptools --upgrade \
  && pip install pykcs11
 
-# changed defaults for c14n, digest & signing alg - used rhoerbe fork
+# 2017-05: changed defaults for c14n, digest & signing alg - used rhoerbe fork
 ENV repodir='/opt/source/pyXMLSecurity'
 ENV repourl='https://github.com/rhoerbe/pyXMLSecurity'
 # the branch has patches for sig/digest als and unlabeld privated keys in HSM
