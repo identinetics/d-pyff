@@ -3,9 +3,20 @@ FROM intra/centos7_py36_base
 RUN yum -y update \
  && yum -y install logrotate sudo sysvinit-tools wget xmlstarlet \
  && yum -y install usbutils gcc gcc-c++ git redhat-lsb-core \
-                   opensc pcsc-lite engine_pkcs11 gnutls-utils softhsm unzip \
+                   pcsc-lite engine_pkcs11 gnutls-utils softhsm unzip \
  && yum -y install python-pip python-devel python-jinja2 libxslt-devel swig \
  && yum clean all
+
+# Centos 7 stock OpenSC is version 0.16 with bugs and key support limited to RSA<=2048
+WORKDIR /root
+RUN yum -y install autoconf automake gcc gcc-c++ git libtool pcsc-lite-devel \
+ && wget https://github.com/OpenSC/OpenSC/releases/download/0.19.0/opensc-0.19.0.tar.gz \
+ && tar xfvz opensc-*.tar.gz \
+ && cd opensc-* \
+ && ./bootstrap \
+ && ./configure --prefix=/usr/local --sysconfdir=/etc/opensc \
+ && make \
+ && make install
 
 # python3 currently used only for manifest generation; pyff is on 2.7
 RUN pip3 install pytest

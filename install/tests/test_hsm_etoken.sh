@@ -25,12 +25,12 @@ setup() {
 run_tests() {
     testid=10
     test_purpose='detect HSM USB device'
-    test_cmd="lsusb | grep $HSMUSBDEVICE"
+    test_cmd="lsusb -v | egrep $HSMUSBDEVICE"
     log_test_header
     if [[ $SOFTHSM ]]; then
         log_newline " .. skipping, Soft HSM configured"
     else
-        lsusb | grep $HSMUSBDEVICE > $LOGDIR/test${testid}.log
+        eval $test_cmd > $LOGDIR/test${testid}.log
         if (( $? != 0 )); then
             log_newline "\n  HSM USB device not found - failed HSM test"
             cat $LOGDIR/test${testid}.log | tee >> $LOGFILE
@@ -171,8 +171,9 @@ run_tests() {
     log_test_header
     /scripts/pkcs11_key_to_token.sh -c /ramdisk/testcert_crt.der -k /ramdisk/testcert_key.der \
         -l sigkey-citest -n mdsign-token-citest -s $SOPIN -t $PYKCS11PIN > $LOGDIR/test${testid}.log 2>&1
-    if (( $? > 0 )); then
-        log_newline " .. ERROR: Writing key and certificate to HSM token failed with code=$?"
+    rc=$?
+    if (( rc > 0 )); then
+        log_newline " .. ERROR: Writing key and certificate to HSM token failed with code=${rc}"
         cat $LOGDIR/test${testid}b.log | tee >> $LOGFILE
         exit 1
     else
