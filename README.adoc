@@ -80,8 +80,8 @@ Functional enhancements to pyFF:
 . Environment variables (using PKCS11 device for signing)
 [cols="2,4"]
 |===
-| HSMUSBDEVICE | Name of device used as regex to match output from lsusb (replace blanks wih '.'). E.g. 'Aladdin.Knowledge.Systems.Token.JC'
-| HSMP11DEVICE | Name of device slot in Cryptoki Library, with blanks replaced by '.' (e.g.'eToken.5110')
+| PKCS11USBDEVICE | Name of device used as regex to match output from lsusb (replace blanks wih '.'). E.g. 'Aladdin.Knowledge.Systems.Token.JC'
+| PKCS11LIBDEVICE | Name of device slot in Cryptoki Library, with blanks replaced by '.' (e.g.'eToken.5110')
 | P11KIT_DESC | Name of Device in p11.kit (rquired for test script)
 | PYKCS11LIB | Driver for HSM token
 | PKCS11_CARD_DRIVER | same as PYKCS11LIB

@@ -15,6 +15,6 @@
     # pkcs11-lib path: absolute path, e.g. /usr/lib64/libeToken.so
     # token: "label" member of the CK_TOKEN_INFO structure as UTF-8 string,
     #        e.g. mdsign-token-prod (do not use the key label (CKA_LABEL)!)
-    key: pkcs11:///usr/lib64/libeToken.so/mdsign-token-citest
+    key: pkcs11:///usr/lib64/libeToken.so/sigkey
     # Token PW from ENV PYKCS11PIN
 - publish: /var/md_feed/metadata_hsm_sp.xml

@@ -63,7 +63,7 @@ delete_exsting_data() {
 
 
 prepare_test_config_sw_cert() {
-    echo 'Test setup 01: set test config and add metadata source data (not overwriting existing data)'
+    echo 'Test setup 02: set test config and add metadata source data (not overwriting existing data)'
     cp -np  /opt/testdata/etc/pki/tls/openssl.cnf /etc/pki/tls/
     cp -np  /opt/testdata/etc/pyff/* /etc/pyff/
     cp -npr /opt/testdata/md_source/*.xml /var/md_source/

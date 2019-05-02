@@ -1,0 +1,16 @@
+version: "3.5"
+services:
+  pyff:
+    environment:
+      - PYKCS11LIB=/usr/lib64/pkcs11/opensc-pkcs11.so
+      - PKCS11_CARD_DRIVER=/usr/lib64/pkcs11/opensc-pkcs11
+      - HSMLABEL=mdsign-token-citest
+      - PKCS11USBDEVICE='Nitrokey.HSM'
+      - PKCS11LIBDEVICE='Nitrokey.HSM'
+      - PYKCS11PIN=648219
+      - SOPIN=3537363231383830
+      # compose config overrules environment file
+      - PIPELINEBATCH=/etc/pyff/md_hsm_nitrohsm.fd
+      - PIPELINEDAEMON=/etc/pyff/mdx_hsm_nitrohsm.fd
+
+

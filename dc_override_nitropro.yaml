@@ -3,14 +3,16 @@ services:
   pyff:
     environment:
       - HSMLABEL=mdsign-token-citest
+      - PYKCS11LIB=/usr/lib64/pkcs11/opensc-pkcs11.so
+      - PKCS11_CARD_DRIVER=/usr/lib64/pkcs11/opensc-pkcs11
+      - PYKCS11PIN=123456
+      - SOPIN=12345678
       # get PKCS11LIBDEVICE with pkcs11-tool --list-token-slots  (must not containe whitespace)
-      - PKCS11LIBDEVICE=eToken.5110
+      - PKCS11LIBDEVICE=Nitrokey.Pro
       # get - PKCS11USBDEVICE with lsusb -v | grep iProduct (must not containe whitespace)
-      - PKCS11USBDEVICE=Aladdin.Knowledge.Systems.Token.JC
-      - PKCS11_CARD_DRIVER=/usr/lib64/libetvTokenEngine.so
-      - PYKCS11LIB=/usr/lib64/libetvTokenEngine.so
-      - PYKCS11PIN=Secret.1
-      - SOPIN=Secret.2
+      - PKCS11USBDEVICE=Nitrokey.Pro
       # compose config overrules environment file
       - PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
       - PIPELINEDAEMON=/etc/pyff/mdx_hsm_eToken.fd
+
+

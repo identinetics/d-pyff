@@ -1,0 +1,15 @@
+<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                     Destination="https://www.eduidam.at/affwebservices/public/saml2slo"
+                     ID="_2f25c3056e742e28d2f3493544688953"
+                     IssueInstant="2019-04-29T20:14:29Z"
+                     Version="2.0">
+  <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">https://shib.lms.at/shibboleth</saml:Issuer>
+  <samlp:Extensions>
+    <aslo:Asynchronous xmlns:aslo="urn:oasis:names:tc:SAML:2.0:protocol:ext:async-slo"/>
+  </samlp:Extensions>
+  <ns2:NameID xmlns:ns2="urn:oasis:names:tc:SAML:2.0:assertion"
+              Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+  >max.mustermann_001
+  </ns2:NameID>
+  <samlp:SessionIndex>KLzlekit2v6MgzYLzKvKdholyTU=rrTPxA==</samlp:SessionIndex>
+</samlp:LogoutRequest>

@@ -16,7 +16,11 @@ RUN yum -y install autoconf automake gcc gcc-c++ git libtool pcsc-lite-devel \
  && ./bootstrap \
  && ./configure --prefix=/usr/local --sysconfdir=/etc/opensc \
  && make \
- && make install
+ && make install \
+ && mkdir -p /usr/lib64//pkcs11/ \
+ && ln -s /usr/lib/opensc-pkcs11.so /usr/lib64/opensc-pkcs11.so \
+ && ln -s /usr/lib/opensc-pkcs11.so /usr/lib64/pkcs11/opensc-pkcs11.so
+
 
 # python3 currently used only for manifest generation; pyff is on 2.7
 RUN pip3 install pytest

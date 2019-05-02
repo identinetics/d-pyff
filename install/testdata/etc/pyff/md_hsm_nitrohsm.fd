@@ -15,6 +15,6 @@
     # pkcs11-lib file path: absolute path, e.g. /usr/lib64/libeToken.so
     # key label: key label (CKA_LABEL) as UTF-8 string, e.g. sigkey-prod
     #            (do not use the "label" member of the CK_TOKEN_INFO structure!)
-    key: pkcs11:///usr/lib64/libeToken.so/sigkey
+    key: pkcs11:///usr/lib64/pkcs11/opensc-pkcs11.so/sigkey
     # Token PW injected from environment variable PYKCS11PIN
 - publish: /var/md_feed/metadata_hsm.xml

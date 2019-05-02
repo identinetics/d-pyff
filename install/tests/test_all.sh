@@ -6,8 +6,8 @@ fi
 
 
 main() {
-    setup
     prepare_git_user
+    setup
     test_with_swcert
     test_with_pkcs11
 }
@@ -16,13 +16,14 @@ main() {
 setup() {
     export USERPIN=$PYKCS11PIN
     export PKCS11_CARD_DRIVER=$PYKCS11LIB
-    echo '=== setup test fixture (replace existing data and configuration) ==='
     run_as_pyff "/tests/test_setup_data.sh -d"
 }
 
 
 prepare_git_user() {
-    echo 'Test setup 02: setup git user'
+    echo 'Test setup 01: setup git user'
+    cd /tmp
+    git init # dummy repo
     git config --global user.email "tester@testinetics.com"
     git config --global user.name "Unit Test"
     git config --global push.default simple
@@ -55,19 +56,24 @@ test_with_pkcs11() {
 
     if [[ "$SOFTHSM" ]]; then
         echo 'testing PKCS11 with SoftHSM'
-        pytest -o cache_dir=/tmp -m 'not hsm' /tests/test_pkcs11.py
+        pytest --tb=short -o cache_dir=/tmp -m 'softhsm' /tests/test_pkcs11.py
         export PIPELINEBATCH=/etc/pyff/md_softhsm.fd
     else
-        lsusb | grep "$HSMUSBDEVICE" >/dev/null
+        lsusb -v | grep "$PKCS11USBDEVICE" >/dev/null
         grep_rc=$?
         if (( grep_rc == 0 )); then
-            echo "testing PKCS11 with $HSMUSBDEVICE"
-            pytest -o cache_dir=/tmp /tests/test_pkcs11.py
-            export PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
+            echo "testing PKCS11 with $PKCS11USBDEVICE"
+            if [[ "$PKCS11USBDEVICE"=='Nitro.Pro' ]]; then
+                pytest --tb=short -o cache_dir=/tmp -m 'smartcard' /tests/test_pkcs11.py
+                export PIPELINEBATCH=/etc/pyff/md_hsm_nitropro.fd
+            else
+                pytest --tb=short -o cache_dir=/tmp -m 'hsm' /tests/test_pkcs11.py
+                export PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
+            fi
             echo; echo '=== test_pyff.sh (Aggregator) ==='
             run_as_pyff /tests/test_pyff.sh
         else
-            echo; echo 'test PKCS11 failed: HSM USB Device $HSMUSBDEVICE not found'
+            echo; echo 'test PKCS11 failed: HSM USB Device $PKCS11USBDEVICE not found'
             exit 1
         fi
     fi

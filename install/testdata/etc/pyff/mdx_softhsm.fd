@@ -14,8 +14,9 @@
                 validUntil: P10D
                 ID: your_metadatafeed_prefix_
              - sign:
-                key: /etc/pki/metadata_signing-key.pem
-                cert: /etc/pki/metadata_signing-crt.pem
+                # the last part of the "URI" is the key name on the eToken
+                key: pkcs11:///usr/lib64/libsofthsm2.so/sigkey
+                # Token PW from ENV PYKCS11PIN
              - emit application/xml
              - break
         - when accept application/json:
