@@ -85,7 +85,7 @@ def test_pcscd_up():
 def test_list_pkcs11_token_slots(testenv):
     cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'], '--list-token-slots']
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    assert rc == 0, (cmd + ' failed. ERROR: HSM Token not connected')
+    assert rc == 0, ' '.join(cmd) + ' failed. ERROR: HSM Token not connected'
 
 
 @pytest.mark.hsm
@@ -95,14 +95,14 @@ def test_initialize_token(testenv):
            '--init-token', '--label', testenv['HSMLABEL'], '--so-pin', testenv['SOPIN'],
     ]
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    assert rc == 0, (cmd + f" failed. HSM Token not initialized, {cmd[0]} failed with code " + str(rc))
+    assert rc == 0, ' '.join(cmd) + f" failed. HSM Token not initialized, {cmd[0]} failed with code " + str(rc)
 
 
 @pytest.mark.smartcard
 def test_erase_token(testenv):
     cmd = ['/usr/bin/openpgp-tool', '--erase']
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    assert rc == 0, (cmd + f" failed. HSM Token not initialized, rc " + str(rc))
+    assert rc == 0, ' '.join(cmd) + f" failed. HSM Token not initialized, rc " + str(rc)
 
 
 @pytest.mark.hsm
@@ -112,7 +112,7 @@ def test_initialize_user_pin(testenv):
            '--init-pin', '--login', '--pin', testenv['PYKCS11PIN'], '--so-pin', testenv['SOPIN'],
            ]
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    assert rc == 0, (cmd + ' failed. User PIN not initialized, pkcs11-tool returned ' + str(rc))
+    assert rc == 0, ' '.join(cmd) + ' failed. User PIN not initialized, pkcs11-tool returned ' + str(rc)
 
 
 @pytest.mark.hsm
@@ -123,7 +123,7 @@ def test_user_login(testenv):
            '--show-info', '--login', '--pin', testenv['PYKCS11PIN'],
     ]
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    assert rc == 0, (cmd + ' failed. Could not login to token.')
+    assert rc == 0, ' '.join(cmd) + ' failed. Could not login to token.'
 
 
 @pytest.mark.hsm

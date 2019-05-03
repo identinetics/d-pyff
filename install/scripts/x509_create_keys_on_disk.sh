@@ -25,7 +25,6 @@ get_commandline_opts() {
         n) keyname=$OPTARG;;
         v) verbose="True";;
         s) x509subject=$OPTARG;;
-        x) pkcs12="True";;
         :) echo "Option -$OPTARG requires an argument"; exit 1;;
         *) usage; exit 0;;
       esac
@@ -110,13 +109,10 @@ create_keypair_and_certificate() {
     $cmd2
     $cmd3
     $cmd4
+    $cmd5
     chmod 600 /ramdisk/${keyname}_key*.pem \
-              /ramdisk/${keyname}_key.der
-    if [[ "$pkcs12" == 'True' ]]; then
-        echo "create PKCS#12 certificate file including private key"
-        $cmd5
-        chmod 600 /ramdisk/${keyname}_crt.p12
-    fi
+              /ramdisk/${keyname}_key.der \
+              /ramdisk/${keyname}_crt.p12
 }
 
 

@@ -8,18 +8,6 @@ main() {
 }
 
 
-run_as_pyff() {
-    cmd=$1
-    if (( $(id -u) == 0 )); then
-        su --preserve-environment pyff -c "${cmd}"
-        rc=$?
-        return rc
-    else
-        $cmd
-    fi
-}
-
-
 setup() {
     SCRIPT=$(basename $0)
     SCRIPT=${SCRIPT%.*}

@@ -3,10 +3,10 @@ services:
   pyff:
     environment:
       - PYKCS11LIB=/usr/lib64/pkcs11/opensc-pkcs11.so
-      - PKCS11_CARD_DRIVER=/usr/lib64/pkcs11/opensc-pkcs11
+      - PKCS11_CARD_DRIVER=/usr/lib64/pkcs11/opensc-pkcs11.so
       - HSMLABEL=mdsign-token-citest
-      - PKCS11USBDEVICE='Nitrokey.HSM'
-      - PKCS11LIBDEVICE='Nitrokey.HSM'
+      - PKCS11USBDEVICE=Nitrokey.HSM
+      - PKCS11LIBDEVICE=Nitrokey.HSM
       - PYKCS11PIN=648219
       - SOPIN=3537363231383830
       # compose config overrules environment file

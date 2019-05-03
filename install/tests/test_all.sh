@@ -8,6 +8,19 @@ main() {
 }
 
 
+run_as_pyff() {
+    cmd=$1
+    if (( $(id -u) == 0 )); then
+        # to return the nested command's code print it a integer to stdout
+        rc=$(su --preserve-environment pyff -c ${cmd} >/dev/null 2>&1; echo $?)
+        return $rc
+    else
+        $cmd
+        return $rc
+    fi
+}
+
+
 setup() {
     export USERPIN=$PYKCS11PIN
     export PKCS11_CARD_DRIVER=$PYKCS11LIB
@@ -28,7 +41,7 @@ prepare_git_user() {
 test_with_swcert() {
     echo; echo '=== test_pyff.sh (Aggregator) with SW-cert ==='
     export PIPELINEBATCH='/etc/pyff/md_swcert.fd'
-    run_as_pyff /tests/test_pyff.sh
+    run_as_pyff /tests/shellscripts/test_pyff.sh
 
 }
 
@@ -57,7 +70,7 @@ test_with_pkcs11() {
                 rc=$?
             fi
             if (( rc != 0 )); then
-                echo "test faied, test_pkcs11.py returned ${rc}"
+                echo "test failed, test_pkcs11.py returned ${rc}"
                 exit $rc
             fi
         else
