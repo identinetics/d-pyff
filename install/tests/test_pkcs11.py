@@ -45,16 +45,18 @@ def testenv():
     return test_env
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
+@pytest.mark.sc_nitrokeypro
 def test_detect_PKCS11_USB_device(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
     rc = subprocess.call([s], shell=True, env=testenv)
     assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
+@pytest.mark.sc_nitrokeypro
 @pytest.mark.softhsm
 def test_pkcs11_env_settings(testenv):
     assert testenv['HSMLABEL']
@@ -66,21 +68,25 @@ def test_pkcs11_env_settings(testenv):
     assert testenv['SOPIN']
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
+@pytest.mark.sc_nitrokeypro
 def test_pkcs11_env_settings_hsm(testenv):
     assert testenv['PKCS11USBDEVICE']
     assert testenv['PKCS11LIBDEVICE']
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
+@pytest.mark.sc_nitrokeypro
 def test_pcscd_up():
     rc = subprocess.call(['/usr/sbin/pidof', '/usr/sbin/pcscd'], shell=False)
     assert rc == 0, ('/usr/sbin/pcscd not running')
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
+@pytest.mark.sc_nitrokeypro
 @pytest.mark.softhsm
 def test_list_pkcs11_token_slots(testenv):
     cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'], '--list-token-slots']
@@ -88,9 +94,9 @@ def test_list_pkcs11_token_slots(testenv):
     assert rc == 0, ' '.join(cmd) + ' failed. ERROR: HSM Token not connected'
 
 
-@pytest.mark.hsm
+@pytest.mark.hsm_etoken
 @pytest.mark.softhsm
-def test_initialize_token(testenv):
+def test_initialize_token_pkcs11tool(testenv):
     cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'],
            '--init-token', '--label', testenv['HSMLABEL'], '--so-pin', testenv['SOPIN'],
     ]
@@ -98,14 +104,33 @@ def test_initialize_token(testenv):
     assert rc == 0, ' '.join(cmd) + f" failed. HSM Token not initialized, {cmd[0]} failed with code " + str(rc)
 
 
-@pytest.mark.smartcard
+@pytest.mark.hsm_nitro
+def test_initialize_token_schsmtool(testenv):
+    cmd = ['/usr/bin/sc-hsm-tool', '--initialize',
+           '--so-pin', testenv['SOPIN'], '--pin', "$PYKCS11PIN",
+    ]
+    rc = subprocess.call(cmd, shell=False, env=testenv)
+    assert rc == 0, ' '.join(cmd) + f" failed. HSM Token not initialized, sc-hsm-tool returned " + str(rc)
+
+
+@pytest.mark.hsm_nitro
+def test_create_keypair_on_device(testenv):
+    cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'],
+           '--keypairgen', '--login', '--pin', testenv['PYKCS11PIN'],
+           '--key-type', 'rsa:2048', '--id', '10', '--label', 'sigkey',
+    ]
+    rc = subprocess.call(cmd, shell=False, env=testenv)
+    assert rc == 0, ' '.join(cmd) + f" failed. Key pair not created, pkcs11-tool returned " + str(rc)
+
+
+@pytest.mark.sc_nitrokeypro
 def test_erase_token(testenv):
     cmd = ['/usr/bin/openpgp-tool', '--erase']
     rc = subprocess.call(cmd, shell=False, env=testenv)
     assert rc == 0, ' '.join(cmd) + f" failed. HSM Token not initialized, rc " + str(rc)
 
 
-@pytest.mark.hsm
+@pytest.mark.hsm_etoken
 @pytest.mark.softhsm
 def test_initialize_user_pin(testenv):
     cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'],
@@ -115,8 +140,8 @@ def test_initialize_user_pin(testenv):
     assert rc == 0, ' '.join(cmd) + ' failed. User PIN not initialized, pkcs11-tool returned ' + str(rc)
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.sc_nitrokeypro
 @pytest.mark.softhsm
 def test_user_login(testenv):
     cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'],
@@ -126,8 +151,8 @@ def test_user_login(testenv):
     assert rc == 0, ' '.join(cmd) + ' failed. Could not login to token.'
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.sc_nitrokeypro
 @pytest.mark.softhsm
 def test_create_swcert(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
@@ -138,7 +163,7 @@ def test_create_swcert(shellscriptdir, testenv):
     assert Path('/ramdisk', 'testcert_key.der').is_file()
 
 
-@pytest.mark.hsm
+@pytest.mark.hsm_etoken
 @pytest.mark.softhsm
 def test_pkcs11tool_upload_cert(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
@@ -146,7 +171,8 @@ def test_pkcs11tool_upload_cert(shellscriptdir, testenv):
     assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
-@pytest.mark.hsm
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
 @pytest.mark.softhsm
 def test_list_certificates_on_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
@@ -154,7 +180,7 @@ def test_list_certificates_on_hsm(shellscriptdir, testenv):
     assert rc == 0, (s + ' failed. No certificate found.')
 
 
-@pytest.mark.hsm
+@pytest.mark.hsm_etoken
 @pytest.mark.softhsm
 def test_list_private_keys_on_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
@@ -162,8 +188,9 @@ def test_list_private_keys_on_hsm(shellscriptdir, testenv):
     assert rc == 0, (s + ' failed. No key found.')
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.hsm_nitro
+@pytest.mark.sc_nitrokeypro
 # softhsm does not support signing
 def test_sign_with_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
@@ -171,8 +198,8 @@ def test_sign_with_hsm(shellscriptdir, testenv):
     assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.sc_nitrokeypro
 @pytest.mark.softhsms
 def test_gnu_p11tool_list_all(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
@@ -180,8 +207,8 @@ def test_gnu_p11tool_list_all(shellscriptdir, testenv):
     assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
-@pytest.mark.hsm
-@pytest.mark.smartcard
+@pytest.mark.hsm_etoken
+@pytest.mark.sc_nitrokeypro
 @pytest.mark.softhsm
 def test_pyff(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')

@@ -93,7 +93,7 @@ create_keypair_and_certificate() {
     cmd2="openssl x509 -inform PEM -in /ramdisk/${keyname}_crt.pem -outform DER -out /ramdisk/${keyname}_crt.der"
     cmd3="openssl rsa -in /ramdisk/${keyname}_key_pkcs8.pem -out /ramdisk/${keyname}_key_pkcs1.pem"
     cmd4="openssl rsa -in /ramdisk/${keyname}_key_pkcs1.pem -outform DER -out /ramdisk/${keyname}_key.der"
-    cmd5="openssl pkcs12 -export -out /ramdisk/${keyname}_crt.p12 -in /ramdisk/${keyname}_crt.pem -inkey /ramdisk/${keyname}_key_pkcs1.pem"
+    cmd5="openssl pkcs12 -export -nodes -passout pass: -out /ramdisk/${keyname}_crt.p12 -in /ramdisk/${keyname}_crt.pem -inkey /ramdisk/${keyname}_key_pkcs1.pem"
 
     if [ "$verbose" == "True" ]; then
         echo $cmd1

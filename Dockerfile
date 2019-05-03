@@ -106,9 +106,25 @@ ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 RUN mkdir -p /ramdisk /.pytest_cache \
  && chown pyff /ramdisk /.pytest_cache
 
+# For development/debugging - map port in config and start sshd with /start_sshd.sh
+# INSECURE: fixed password, create ssh-keys in image - only for local debugging; otherwise:
+# delete keys to generate them on first container start, not in image
+RUN yum -y install openssh-server \
+ && yum clean all
+RUN echo changeit | passwd -f --stdin root \
+ && echo 'GSSAPIAuthentication no' >> /etc/ssh/sshd_config \
+ && echo 'useDNS no' >> /etc/ssh/sshd_config \
+ && ssh-keygen -q -N '' -t rsa -f /etc/ssh/ssh_host_rsa_key \
+ && ssh-keygen -q -N '' -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
+ && ssh-keygen -q -N '' -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
+
+VOLUME /etc/sshd
+EXPOSE 2022
+
 # create manitest for automatic build number generation
 USER $USERNAME
 COPY install/opt/bin/manifest2.sh /opt/bin/manifest2.sh
 
 EXPOSE 8080
 CMD ["/scripts/start_pyffd.sh"]
+

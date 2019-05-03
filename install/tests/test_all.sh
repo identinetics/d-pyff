@@ -60,13 +60,17 @@ test_with_pkcs11() {
         grep_rc=$?
         if (( grep_rc == 0 )); then
             echo "testing PKCS11 with $PKCS11USBDEVICE"
-            if [[ "$PKCS11USBDEVICE" == 'Nitro.Pro' ]]; then
+            if [[ "$PKCS11LIBDEVICE" == 'Nitro.Pro' ]]; then
                 export PIPELINEBATCH=/etc/pyff/md_hsm_nitropro.fd
-                pytest --tb=short -o cache_dir=/tmp -m 'smartcard' /tests/test_pkcs11.py
+                pytest --tb=short -o cache_dir=/tmp -m 'sc_nitrokeypro' /tests/test_pkcs11.py
                 rc=$?
-            else
+            elif [[ "$PKCS11LIBEVICE" == 'Nitrokey.HSM' ]]; then
                 export PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
-                pytest --tb=short -o cache_dir=/tmp -m 'hsm' /tests/test_pkcs11.py
+                pytest --tb=short -o cache_dir=/tmp -m 'hsm_nitro' /tests/test_pkcs11.py
+                rc=$?
+            elif [[ "$PKCS11LIBEVICE" == 'eToken.5110' ]]; then
+                export PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
+                pytest --tb=short -o cache_dir=/tmp -m 'hsm_etoken' /tests/test_pkcs11.py
                 rc=$?
             fi
             if (( rc != 0 )); then
