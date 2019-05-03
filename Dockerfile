@@ -18,8 +18,9 @@ RUN yum -y install autoconf automake gcc libtool pcsc-lite-devel \
  && make \
  && make install \
  && mkdir -p /usr/lib64//pkcs11/ \
- && ln -s /usr/lib/opensc-pkcs11.so /usr/lib64/opensc-pkcs11.so \
- && ln -s /usr/lib/opensc-pkcs11.so /usr/lib64/pkcs11/opensc-pkcs11.so \
+ && ln -s /usr/local/lib/opensc-pkcs11.so /usr/lib64/opensc-pkcs11.so \
+ && ln -s /usr/local/lib/opensc-pkcs11.so /usr/lib64/pkcs11/opensc-pkcs11.so \
+ && ln -s /usr/local/bin/openpgp-tool /usr/bin/openpgp-tool \
  && ln -s /usr/local/bin/pkcs11-tool /usr/bin/pkcs11-tool \
  && ln -s /usr/local/bin/pkcs15-tool /usr/bin/pkcs15-tool
 

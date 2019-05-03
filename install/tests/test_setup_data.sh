@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-if [[ "$BASH_TRACE" ]]; then
-    set -xv
-    PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-fi
 
 
 main() {
@@ -109,4 +105,9 @@ create_git_ssh_keys() {
     fi
 }
 
+
+if [[ "$BASH_TRACE" ]]; then
+    set -xv
+    PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+fi
 main "$@"

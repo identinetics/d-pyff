@@ -2,7 +2,7 @@
 
 main() {
     get_commandline_opts "$@"
-    block_root
+    #block_root
     aggregate_metadata
     generate_html
 }
@@ -38,6 +38,11 @@ block_root() {
 
 aggregate_metadata() {
     /usr/bin/pyff --loglevel=$LOGLEVEL --logfile=$LOGDIR/pyff.lastlog $PIPELINEBATCH
+    rc=$?
+    if (( rc > 0 )); then
+        echo "/usr/bin/pyff failed with rc=${rc}"
+        exit $rc
+    fi
     touch $LOGDIR/pyff.log
     cat $LOGDIR/pyff.lastlog >> $LOGDIR/pyff.log
     chmod 644 /var/md_feed/*.xml 2> /dev/null

@@ -27,6 +27,8 @@ def copy_env_key(new_env, key):
 def testenv():
     test_env = {}
     copy_env_key(test_env, 'HSMLABEL')
+    copy_env_key(test_env, 'JAVA_HOME')
+    copy_env_key(test_env, 'LOGLEVEL')
     copy_env_key(test_env, 'PKCS11USBDEVICE')
     copy_env_key(test_env, 'PKCS11LIBDEVICE')
     copy_env_key(test_env, 'P11KIT_DESC')
@@ -48,8 +50,7 @@ def testenv():
 def test_detect_PKCS11_USB_device(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
     rc = subprocess.call([s], shell=True, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed with code = ' + str(rc))
+    assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
 @pytest.mark.hsm
@@ -76,8 +77,7 @@ def test_pkcs11_env_settings_hsm(testenv):
 @pytest.mark.smartcard
 def test_pcscd_up():
     rc = subprocess.call(['/usr/sbin/pidof', '/usr/sbin/pcscd'], shell=False)
-    if rc:
-        raise Exception('/usr/sbin/pcscd not running')
+    assert rc == 0, ('/usr/sbin/pcscd not running')
 
 @pytest.mark.hsm
 @pytest.mark.smartcard
@@ -85,8 +85,7 @@ def test_pcscd_up():
 def test_list_pkcs11_token_slots(testenv):
     cmd = ['/usr/bin/pkcs11-tool', '--module', testenv['PYKCS11LIB'], '--list-token-slots']
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed. ERROR: HSM Token not connected')
+    assert rc == 0, (cmd + ' failed. ERROR: HSM Token not connected')
 
 
 @pytest.mark.hsm
@@ -96,16 +95,14 @@ def test_initialize_token(testenv):
            '--init-token', '--label', testenv['HSMLABEL'], '--so-pin', testenv['SOPIN'],
     ]
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + f" failed. HSM Token not initialized, {cmd[0]} failed with code " + str(rc))
+    assert rc == 0, (cmd + f" failed. HSM Token not initialized, {cmd[0]} failed with code " + str(rc))
 
 
 @pytest.mark.smartcard
 def test_erase_token(testenv):
     cmd = ['/usr/bin/openpgp-tool', '--erase']
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + f" failed. HSM Token not initialized, {cmd[0]} failed with code " + str(rc))
+    assert rc == 0, (cmd + f" failed. HSM Token not initialized, rc " + str(rc))
 
 
 @pytest.mark.hsm
@@ -115,8 +112,7 @@ def test_initialize_user_pin(testenv):
            '--init-pin', '--login', '--pin', testenv['PYKCS11PIN'], '--so-pin', testenv['SOPIN'],
            ]
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed. User PIN not initialized, failed with code ' + str(rc))
+    assert rc == 0, (cmd + ' failed. User PIN not initialized, pkcs11-tool returned ' + str(rc))
 
 
 @pytest.mark.hsm
@@ -127,8 +123,7 @@ def test_user_login(testenv):
            '--show-info', '--login', '--pin', testenv['PYKCS11PIN'],
     ]
     rc = subprocess.call(cmd, shell=False, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed. Could not login to token.')
+    assert rc == 0, (cmd + ' failed. Could not login to token.')
 
 
 @pytest.mark.hsm
@@ -148,8 +143,7 @@ def test_create_swcert(shellscriptdir, testenv):
 def test_pkcs11tool_upload_cert(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')  # shell script name == function name + ext
     rc = subprocess.call([s], shell=True, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed with code = ' + str(rc))
+    assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
 @pytest.mark.hsm
@@ -157,8 +151,7 @@ def test_pkcs11tool_upload_cert(shellscriptdir, testenv):
 def test_list_certificates_on_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed. No certificate found.')
+    assert rc == 0, (s + ' failed. No certificate found.')
 
 
 @pytest.mark.hsm
@@ -166,8 +159,8 @@ def test_list_certificates_on_hsm(shellscriptdir, testenv):
 def test_list_private_keys_on_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed. No key found.')
+    assert rc == 0, (s + ' failed. No key found.')
+
 
 @pytest.mark.hsm
 @pytest.mark.smartcard
@@ -175,15 +168,22 @@ def test_list_private_keys_on_hsm(shellscriptdir, testenv):
 def test_sign_with_hsm(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed with code = ' + str(rc))
+    assert rc == 0, (s + ' failed with code = ' + str(rc))
+
+
+@pytest.mark.hsm
+@pytest.mark.smartcard
+@pytest.mark.softhsms
+def test_gnu_p11tool_list_all(shellscriptdir, testenv):
+    s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
+    rc = subprocess.call([s], shell=True, env=testenv)
+    assert rc == 0, (s + ' failed with code = ' + str(rc))
 
 
 @pytest.mark.hsm
 @pytest.mark.smartcard
 @pytest.mark.softhsm
-def test_test_gnu_p11tool_list_all(shellscriptdir, testenv):
+def test_pyff(shellscriptdir, testenv):
     s = shellscriptpath(shellscriptdir, inspect.stack()[0][3] + '.sh')
     rc = subprocess.call([s], shell=True, env=testenv)
-    if rc:
-        raise Exception(inspect.stack()[0][3] + ' failed with code = ' + str(rc))
+    assert rc == 0, (s + ' failed with code = ' + str(rc))
