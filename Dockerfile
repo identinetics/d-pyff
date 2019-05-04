@@ -114,6 +114,7 @@ RUN yum -y install openssh-server \
 RUN echo changeit | passwd -f --stdin root \
  && echo 'GSSAPIAuthentication no' >> /etc/ssh/sshd_config \
  && echo 'useDNS no' >> /etc/ssh/sshd_config \
+ && sed -i -e 's/#Port 22/Port 2022/' /etc/ssh/sshd_config
  && ssh-keygen -q -N '' -t rsa -f /etc/ssh/ssh_host_rsa_key \
  && ssh-keygen -q -N '' -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
  && ssh-keygen -q -N '' -t ed25519 -f /etc/ssh/ssh_host_ed25519_key

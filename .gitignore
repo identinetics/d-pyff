@@ -1,5 +1,6 @@
 .DS_Store
 .idea/
-conf*.sh
-REPO_STATUS
-out/
+dc*.yaml
+Dockerfile*
+!Dockerfile
+work/

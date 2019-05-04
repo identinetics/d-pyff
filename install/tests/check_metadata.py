@@ -4,7 +4,7 @@ if len(sys.argv) != 2:
     raise Exception('Must pass 1 argument with filename of metadata file')
 
 if not os.path.exists(sys.argv[1]):
-    raise Exception('Metadata file does not exist')
+    raise Exception('Metadata file %s does not exist' % sys.argv[1])
 
 metadata = lxml.etree.parse(sys.argv[1])
 md_root = metadata.getroot()
