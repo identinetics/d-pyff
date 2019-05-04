@@ -3,4 +3,5 @@
 dc*.yaml
 Dockerfile*
 !Dockerfile
+!Dockerfile.debug
 work/

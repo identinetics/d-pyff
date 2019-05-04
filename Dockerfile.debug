@@ -1,0 +1,56 @@
+# add following snippets to add support for remote debugging via ssh and local debugging with gdb
+
+RUN sed -i -e 's/^enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Debuginfo.repo \
+ && yum install yum-utils -y \
+ && yum install gdb python-debuginfo -y \
+ && debuginfo-install glibc-2.17-260.el7_6.4.x86_64 atk-2.28.1-1.el7.x86_64
+    bzip2-libs-1.0.6-13.el7.x86_64 cairo-1.15.12-3.el7.x86_64 \
+    fontconfig-2.13.0-4.3.el7.x86_64 freetype-2.8-12.el7_6.1.x86_64 \
+    fribidi-1.0.2-1.el7.x86_64 gdk-pixbuf2-2.36.12-3.el7.x86_64 \
+    glib2-2.56.1-2.el7.x86_64 graphite2-1.3.10-1.el7_3.x86_64 gtk2-2.24.31-1.el7.x86_64 \
+    harfbuzz-1.7.5-2.el7.x86_64 libX11-1.6.5-2.el7.x86_64 libXau-1.0.8-2.1.el7.x86_64 \
+    libXcomposite-0.4.4-4.1.el7.x86_64 libXcursor-1.1.15-1.el7.x86_64 \
+    libXdamage-1.1.4-4.1.el7.x86_64 libXext-1.3.3-3.el7.x86_64 libXfixes-5.0.3-1.el7.x86_64 \
+    libXi-1.7.9-1.el7.x86_64 libXinerama-1.1.3-2.1.el7.x86_64 libXrandr-1.5.1-2.el7.x86_64 \
+    libXrender-0.9.10-1.el7.x86_64 libblkid-2.23.2-59.el7_6.1.x86_64 \
+    libgcc-4.8.5-36.el7_6.2.x86_64 libglvnd-1.0.1-0.8.git5baa1e5.el7.x86_64 \
+    libglvnd-egl-1.0.1-0.8.git5baa1e5.el7.x86_64 libglvnd-glx-1.0.1-0.8.git5baa1e5.el7.x86_64 \
+    libmount-2.23.2-59.el7_6.1.x86_64 libpng-1.5.13-7.el7_2.x86_64 libstdc++-4.8.5-36.el7_6.2.x86_64 \
+    libthai-0.1.14-9.el7.x86_64 libxcb-1.13-1.el7.x86_64 pango-1.42.4-2.el7_6.x86_64 \
+    pcsc-lite-libs-1.8.8-8.el7.x86_64 pixman-0.34.0-1.el7.x86_64 -y \
+    keyutils-libs-1.5.8-3.el7.x86_64 krb5-libs-1.15.1-37.el7_6.x86_64 \
+    libcom_err-1.42.9-13.el7.x86_64 libgcrypt-1.5.3-14.el7.x86_64 libgpg-error-1.12-3.el7.x86_64 \
+    libxml2-2.9.1-6.el7_2.3.x86_64 libxslt-1.1.28-5.el7.x86_64 \
+    openssl-libs-1.0.2k-16.el7_6.1.x86_64 python-lxml-3.2.1-4.el7.x86_64 \
+    python-markupsafe-0.11-10.el7.x86_64 xz-libs-5.2.2-1.el7.x86_64 -y
+
+# to start pyff with gdb no CL args are allowed. Add efault pipeline:
+# vi /usr/lib/python2.7/site-packages/pyff/md.py
+        if not args:
+            args = ['/etc/pyff/md_hsm_etoken.fd']
+
+
+
+# For development/debugging - map port in config and start sshd with /start_sshd.sh
+# INSECURE: fixed password, create ssh-keys in image - only for local debugging; otherwise:
+# delete keys to generate them on first container start, not in image
+#RUN yum -y install openssh-server \
+# && yum clean all
+#RUN echo changeit | passwd -f --stdin root \
+# && echo 'GSSAPIAuthentication no' >> /etc/ssh/sshd_config \
+# && echo 'useDNS no' >> /etc/ssh/sshd_config \
+# && sed -i -e 's/#Port 22/Port 2022/' /etc/ssh/sshd_config \
+# && ssh-keygen -q -N '' -t rsa -f /etc/ssh/ssh_host_rsa_key \
+# && ssh-keygen -q -N '' -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
+# && ssh-keygen -q -N '' -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
+
+VOLUME /etc/sshd
+EXPOSE 2022
+
+# create manitest for automatic build number generation
+USER $USERNAME
+COPY install/opt/bin/manifest2.sh /opt/bin/manifest2.sh
+
+EXPOSE 8080
+CMD ["/scripts/start_pyffd.sh"]
+

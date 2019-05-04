@@ -35,7 +35,7 @@ test_create_aggregate() {
 test_verify_metadata() {
     export LOGLEVEL=INFO
     /opt/xmlsectool-2/xmlsectool.sh --verifySignature --inFile /var/md_feed/metadata.xml \
-        --certificate /etc/pki/sign/certs/metadata_crt.pem --whitelistDigest SHA-1 > $LOGDIR/test22.log
+        --certificate /ramdisk/testcert_crt.pem --whitelistDigest SHA-1 > $LOGDIR/test22.log
     rc=$?
     if (( rc != 0 )); then
         echo 'Metadata signature not valid'
