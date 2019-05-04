@@ -28,9 +28,10 @@ RUN yum -y install autoconf automake gcc libtool pcsc-lite-devel \
 # python3 currently used only for manifest generation; pyff is on 2.7
 RUN pip3 install pytest
 
+# pykcs11==1.5.5 causes SIGSEGV
 COPY install/opt/pyFF /opt/source/pyff/
 RUN pip install setuptools --upgrade \
- && pip install pykcs11
+ && pip install pykcs11==1.5.3
 
 # 2017-05: changed defaults for c14n, digest & signing alg - used rhoerbe fork
 ENV repodir='/opt/source/pyXMLSecurity'
@@ -105,19 +106,6 @@ ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 #create /ramdisk creation for certs - not required for unit tests
 RUN mkdir -p /ramdisk /.pytest_cache \
  && chown pyff /ramdisk /.pytest_cache
-
-# For development/debugging - map port in config and start sshd with /start_sshd.sh
-# INSECURE: fixed password, create ssh-keys in image - only for local debugging; otherwise:
-# delete keys to generate them on first container start, not in image
-RUN yum -y install openssh-server \
- && yum clean all
-RUN echo changeit | passwd -f --stdin root \
- && echo 'GSSAPIAuthentication no' >> /etc/ssh/sshd_config \
- && echo 'useDNS no' >> /etc/ssh/sshd_config \
- && sed -i -e 's/#Port 22/Port 2022/' /etc/ssh/sshd_config
- && ssh-keygen -q -N '' -t rsa -f /etc/ssh/ssh_host_rsa_key \
- && ssh-keygen -q -N '' -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
- && ssh-keygen -q -N '' -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
 
 VOLUME /etc/sshd
 EXPOSE 2022
