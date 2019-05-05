@@ -27,7 +27,7 @@ test_create_aggregate() {
         echo '>>  Aggregator failed, skipping validation test'
         exit 1
     fi
-    ls -l /var/md_feed/metadata.xml > $LOGDIR/test21.log
+    ls -l /var/md_feed/metadata.xml
     python /tests/check_metadata.py /var/md_feed/metadata.xml >> $LOGDIR/test21.log 2>&1
     /tests/assert_nodiff.sh $LOGDIR/test21.log /opt/testdata/results/$SCRIPT/test21.log
 }

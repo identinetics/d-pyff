@@ -13,4 +13,5 @@ services:
       - PIPELINEBATCH=/etc/pyff/md_hsm_nitrohsm.fd
       - PIPELINEDAEMON=/etc/pyff/mdx_hsm_nitrohsm.fd
 
-
+    cap_drop:
+      - ALL

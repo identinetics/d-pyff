@@ -2,12 +2,14 @@ version: "3.5"
 services:
   pyff:
     environment:
+      - HSMLABEL=mdsign-token-citest
       - LOGLEVEL=DEBUG
       - PIDFILE=/var/log/pyffd.pid
-      # When SOFTHSM is set an unit tests for non-soft HSMs are skipped
-      - SOFTHSM=1
       - PYKCS11LIB=/usr/lib64/libsofthsm2.so
+      - PKCS11_CARD_DRIVER=/usr/lib64/libsofthsm2.so
       - PYKCS11PIN=Secret.1
+      # When SOFTHSM is set, then unit tests for non-soft HSMs are skipped
+      - SOFTHSM=1
       - SOPIN=Secret.2
       # compose config overrules environment file
       - PIPELINEBATCH=/etc/pyff/md_softhsm.fd

@@ -15,4 +15,5 @@ services:
       - PIPELINEBATCH=/etc/pyff/md_hsm_etoken.fd
       - PIPELINEDAEMON=/etc/pyff/mdx_hsm_eToken.fd
 
-
+    cap_drop:
+      - ALL
