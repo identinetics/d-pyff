@@ -29,6 +29,7 @@ def testenv():
     copy_env_key(test_env, 'HSMLABEL')
     copy_env_key(test_env, 'JAVA_HOME')
     copy_env_key(test_env, 'LOGLEVEL')
+    copy_env_key(test_env, 'PIPELINEBATCH')
     copy_env_key(test_env, 'PKCS11USBDEVICE')
     copy_env_key(test_env, 'PKCS11LIBDEVICE')
     copy_env_key(test_env, 'P11KIT_DESC')

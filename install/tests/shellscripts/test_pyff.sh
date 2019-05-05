@@ -21,13 +21,14 @@ test_create_aggregate() {
     #run_as_pyff /scripts/pyff_aggregate.sh
     echo 'test_create_aggregate'
     rm -f /var/md_feed/metadata.xml
-    /scripts/pyff_aggregate.sh
+    eval /scripts/pyff_aggregate.sh
     rc=$?
     if (( rc != 0 )); then
-        echo 'Aggregator failed, skipping validation test'
+        echo '>>  Aggregator failed, skipping validation test'
         exit 1
     fi
-    python /tests/check_metadata.py /var/md_feed/metadata.xml > $LOGDIR/test21.log
+    ls -l /var/md_feed/metadata.xml > $LOGDIR/test21.log
+    python /tests/check_metadata.py /var/md_feed/metadata.xml >> $LOGDIR/test21.log 2>&1
     /tests/assert_nodiff.sh $LOGDIR/test21.log /opt/testdata/results/$SCRIPT/test21.log
 }
 
@@ -38,7 +39,7 @@ test_verify_metadata() {
         --certificate /ramdisk/testcert_crt.pem --whitelistDigest SHA-1 > $LOGDIR/test22.log
     rc=$?
     if (( rc != 0 )); then
-        echo 'Metadata signature not valid'
+        echo '>>  Metadata signature not valid'
         cat $LOGDIR/test22.log
         exit 2
     fi

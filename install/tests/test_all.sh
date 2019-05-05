@@ -12,7 +12,7 @@ run_as_pyff() {
     cmd=$1
     if (( $(id -u) == 0 )); then
         # to return the nested command's code print it a integer to stdout
-        rc=$(su --preserve-environment pyff -c ${cmd} >/dev/null 2>&1; echo $?)
+        rc=$(su --preserve-environment "-c ${cmd}" pyff >/dev/null 2>&1; echo $?)
         return $rc
     else
         $cmd
@@ -74,11 +74,11 @@ test_with_pkcs11() {
                 rc=$?
             fi
             if (( rc != 0 )); then
-                echo "test failed, test_pkcs11.py returned ${rc}"
+                echo ">>  test failed, test_pkcs11.py returned ${rc}"
                 exit $rc
             fi
         else
-            echo; echo 'test PKCS11 failed: HSM USB Device $PKCS11USBDEVICE not found'
+            echo; echo '>>  test PKCS11 failed: HSM USB Device $PKCS11USBDEVICE not found'
             exit 1
         fi
     fi

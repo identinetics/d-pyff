@@ -16,7 +16,7 @@ main() {
 
 check_root() {
     if (( $(id -u) == 0 )); then
-        echo 'setup is not supposed to be run with root privileges'
+        echo '>>  setup is not supposed to be run with root privileges'
         exit 1
     fi
 }
