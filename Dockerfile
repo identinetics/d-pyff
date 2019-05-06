@@ -2,7 +2,7 @@ FROM intra/centos7_py36_base
 
 RUN yum -y update \
  && yum -y install git logrotate sudo redhat-lsb-core sysvinit-tools unzip wget xmlstarlet \
- && yum -y install gcc gcc-c++ python-pip python-devel python-jinja2 libxslt-devel swig \
+ && yum -y install gcc gcc-c++ python36u-devel libxslt-devel swig \
  && yum -y install pcsc-lite engine_pkcs11 gnutls-utils softhsm usbutils \
  && yum clean all
 
@@ -25,13 +25,12 @@ RUN yum -y install autoconf automake gcc libtool pcsc-lite-devel \
  && ln -s /usr/local/bin/pkcs15-tool /usr/bin/pkcs15-tool
 
 
-# python3 currently used only for manifest generation; pyff is on 2.7
 RUN pip3 install pytest
 
 # pykcs11==1.5.5 causes SIGSEGV
 COPY install/opt/pyFF /opt/source/pyff/
-RUN pip install setuptools --upgrade \
- && pip install pykcs11==1.5.3
+RUN python3 -m pip install setuptools --upgrade \
+ && python3 -m pip install pykcs11==1.5.3
 
 # 2017-05: changed defaults for c14n, digest & signing alg - used rhoerbe fork
 ENV repodir='/opt/source/pyXMLSecurity'
@@ -41,9 +40,9 @@ ENV repobranch='rh_fork'
 RUN mkdir -p $repodir && cd $repodir \
  && git clone $repourl . \
  && git checkout $repobranch \
- && python setup.py install
+ && python3 setup.py install
 
-RUN pip install /opt/source/pyff
+RUN python3 -m pip install /opt/source/pyff
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/pyff_batch.log \
