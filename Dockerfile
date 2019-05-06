@@ -28,6 +28,7 @@ RUN yum -y install autoconf automake gcc libtool pcsc-lite-devel \
 RUN pip3 install pytest
 
 # pykcs11==1.5.5 causes SIGSEGV
+ENV LC_ALL=en.utf8
 COPY install/opt/pyFF /opt/source/pyff/
 RUN python3 -m pip install setuptools --upgrade \
  && python3 -m pip install pykcs11==1.5.3
