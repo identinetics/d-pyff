@@ -2,6 +2,7 @@
 
 main() {
     create_sw_certificate_on_ramdisk
+    fingerprint_cert
 }
 
 
@@ -14,6 +15,10 @@ create_sw_certificate_on_ramdisk() {
         echo "ERROR: Creating SW-cert failed with code=$rc" 1>2&
         exit 1
     fi
+}
+
+fingerprint_cert() {
+    md5sum /ramdisk/testcert_crt.pem
 }
 
 

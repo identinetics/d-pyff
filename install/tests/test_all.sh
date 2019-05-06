@@ -28,8 +28,8 @@ test_with_pkcs11() {
 
     if [[ "$SOFTHSM" ]]; then
         echo 'testing PKCS11 with SoftHSM'
-        pytest --tb=short -o cache_dir=/tmp -m 'softhsm' /tests/test_pkcs11.py
         export PIPELINEBATCH=/etc/pyff/md_softhsm.fd
+        pytest --tb=short -o cache_dir=/tmp -m 'softhsm' /tests/test_pkcs11.py
     else
         lsusb -v | grep "$PKCS11USBDEVICE" >/dev/null
         grep_rc=$?

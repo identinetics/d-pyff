@@ -1,6 +1,7 @@
 #!/bin/bash
 
 main() {
+    fingerprint_cert
     write_certificate_and_private_key_to_hsm
 }
 
@@ -13,6 +14,11 @@ write_certificate_and_private_key_to_hsm() {
         echo "ERROR: Writing key and certificate to HSM token failed with code=$rc" 1>&2
         exit 1
     fi
+}
+
+
+fingerprint_cert() {
+    md5sum /ramdisk/testcert_crt.pem # assuming .pem and .der match
 }
 
 

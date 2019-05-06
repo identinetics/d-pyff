@@ -40,6 +40,7 @@ test_create_aggregate() {
 
 test_verify_metadata() {
     export LOGLEVEL=INFO
+    fingerprint_cert
     /opt/xmlsectool-2/xmlsectool.sh --verifySignature --inFile /var/md_feed/metadata.xml \
         --certificate /ramdisk/testcert_crt.pem > $LOGDIR/test_verify_md.log
     rc=$?
@@ -48,6 +49,11 @@ test_verify_metadata() {
         cat $LOGDIR/test_verify_md.log
         exit 2
     fi
+}
+
+
+fingerprint_cert() {
+    md5sum /ramdisk/testcert_crt.pem
 }
 
 
