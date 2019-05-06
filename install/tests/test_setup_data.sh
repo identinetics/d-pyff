@@ -7,6 +7,7 @@ main() {
     setup_logging
     delete_exsting_data
     prepare_test_config_sw_cert
+    prepare_git_user
     prepare_mdsource
     prepare_mdfeed_repo
     create_sw_signing_cert
@@ -60,14 +61,24 @@ delete_exsting_data() {
 
 
 prepare_test_config_sw_cert() {
-    echo 'Test setup 02: set test config and add metadata source data (not overwriting existing data)'
+    echo 'Test setup 01: set test config and add metadata source data (not overwriting existing data)'
     cp -np  /opt/testdata/etc/pki/tls/openssl.cnf /etc/pki/tls/
-    cp -np  /opt/testdata/etc/pyff/* /etc/pyff/
+    #cp -np  /opt/testdata/etc/pyff/* /etc/pyff/
     cp -npr /opt/testdata/md_source/*.xml /var/md_source/
     cp -pr /opt/testdata/etc/pki/sign/* /etc/pki/sign/
     cp -pr /opt/testdata/etc/pyff/* /etc/pyff/
     cp -pr /opt/testdata/md_source/* /var/md_source/
 
+}
+
+
+prepare_git_user() {
+    echo 'Test setup 02: setup git user'
+    cd /tmp
+    git init # dummy repo
+    git config --global user.email "tester@testinetics.com"
+    git config --global user.name "Unit Test"
+    git config --global push.default simple
 }
 
 

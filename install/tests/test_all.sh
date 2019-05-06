@@ -1,23 +1,9 @@
 #!/bin/bash
 
 main() {
-    prepare_git_user
     setup
     test_with_swcert
     test_with_pkcs11
-}
-
-
-run_as_pyff() {
-    cmd=$1
-    if (( $(id -u) == 0 )); then
-        # to return the nested command's code print it a integer to stdout
-        rc=$(su --preserve-environment "-c ${cmd}" pyff >/dev/null 2>&1; echo $?)
-        return $rc
-    else
-        $cmd
-        return $rc
-    fi
 }
 
 
@@ -28,21 +14,10 @@ setup() {
 }
 
 
-prepare_git_user() {
-    echo 'Test setup 01: setup git user'
-    cd /tmp
-    git init # dummy repo
-    git config --global user.email "tester@testinetics.com"
-    git config --global user.name "Unit Test"
-    git config --global push.default simple
-}
-
-
 test_with_swcert() {
     echo; echo '=== test_pyff.sh (Aggregator) with SW-cert ==='
     export PIPELINEBATCH='/etc/pyff/md_swcert.fd'
     run_as_pyff /tests/shellscripts/test_pyff.sh
-
 }
 
 
@@ -83,6 +58,19 @@ test_with_pkcs11() {
         fi
     fi
 
+}
+
+
+run_as_pyff() {
+    cmd=$1
+    if (( $(id -u) == 0 )); then
+        # to return the nested command's code print it a integer to stdout
+        rc=$(su --preserve-environment "-c ${cmd}" pyff >/dev/null 2>&1; echo $?)
+        return $rc
+    else
+        $cmd
+        return $rc
+    fi
 }
 
 

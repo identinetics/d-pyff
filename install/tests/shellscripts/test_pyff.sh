@@ -24,23 +24,28 @@ test_create_aggregate() {
     eval /scripts/pyff_aggregate.sh
     rc=$?
     if (( rc != 0 )); then
-        echo '>>  Aggregator failed, skipping validation test'
+        echo ">>  Aggregator failed, pyff_aggregate returned ${rc}"
         exit 1
     fi
     ls -l /var/md_feed/metadata.xml
-    python /tests/check_metadata.py /var/md_feed/metadata.xml >> $LOGDIR/test21.log 2>&1
-    /tests/assert_nodiff.sh $LOGDIR/test21.log /opt/testdata/results/$SCRIPT/test21.log
+    python /tests/check_metadata.py /var/md_feed/metadata.xml > $LOGDIR/test_cre_agg.log 2>&1
+    /tests/assert_nodiff.sh $LOGDIR/test_cre_agg.log /opt/testdata/results/$SCRIPT/test_cre_agg.log
+    rc=$?
+    if (( rc != 0 )); then
+        echo ">>  test failed, check_metadata returned ${rc}"
+        exit $rc
+    fi
 }
 
 
 test_verify_metadata() {
     export LOGLEVEL=INFO
     /opt/xmlsectool-2/xmlsectool.sh --verifySignature --inFile /var/md_feed/metadata.xml \
-        --certificate /ramdisk/testcert_crt.pem --whitelistDigest SHA-1 > $LOGDIR/test22.log
+        --certificate /ramdisk/testcert_crt.pem > $LOGDIR/test_verify_md.log
     rc=$?
     if (( rc != 0 )); then
         echo '>>  Metadata signature not valid'
-        cat $LOGDIR/test22.log
+        cat $LOGDIR/test_verify_md.log
         exit 2
     fi
 }
