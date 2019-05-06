@@ -28,22 +28,11 @@ RUN yum -y install autoconf automake gcc libtool pcsc-lite-devel \
 RUN pip3 install pytest
 
 # pykcs11==1.5.5 causes SIGSEGV
-ENV LC_ALL=en.utf8
 COPY install/opt/pyFF /opt/source/pyff/
 RUN python3 -m pip install setuptools --upgrade \
  && python3 -m pip install pykcs11==1.5.3
 
-# 2017-05: changed defaults for c14n, digest & signing alg - used rhoerbe fork
-ENV repodir='/opt/source/pyXMLSecurity'
-ENV repourl='https://github.com/rhoerbe/pyXMLSecurity'
-# the branch has patches for sig/digest als and unlabeld privated keys in HSM
-ENV repobranch='rh_fork'
-RUN mkdir -p $repodir && cd $repodir \
- && git clone $repourl . \
- && git checkout $repobranch \
- && python3 setup.py install
-
-RUN python3 -m pip install /opt/source/pyff
+RUN LANG=en_US.UTF-8 python3 -m pip install /opt/source/pyff
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/pyff_batch.log \
