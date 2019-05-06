@@ -366,7 +366,7 @@ run_tests() {
 
     #=============
     testid=29
-    test_purpose='Verify XML signature with xmlsec1'
+    test_purpose='Verify XML signature with xmlsec1 (SW-cert only, no PKCS11'
     test_cmd="xmlsec1 --verify"
     log_test_header
     /usr/bin/xmlsec1 --verify --pubkey-cert-pem /ramdisk/testcert_crt.pem  \

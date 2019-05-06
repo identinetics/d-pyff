@@ -3,7 +3,8 @@
 main() {
     setup
     test_create_aggregate
-    test_verify_metadata
+    test_entities_in_metadata
+    test_verify_metadata_signature
     #test23
 }
 
@@ -27,8 +28,12 @@ test_create_aggregate() {
         echo ">>  Aggregator failed, pyff_aggregate returned ${rc}"
         exit 1
     fi
+}
+
+
+test_entities_in_metadata() {
     ls -l /var/md_feed/metadata.xml
-    python /tests/check_metadata.py /var/md_feed/metadata.xml > $LOGDIR/test_cre_agg.log 2>&1
+    python3 /tests/check_metadata.py /var/md_feed/metadata.xml | sort > $LOGDIR/test_cre_agg.log 2>&1
     /tests/assert_nodiff.sh $LOGDIR/test_cre_agg.log /opt/testdata/results/$SCRIPT/test_cre_agg.log
     rc=$?
     if (( rc != 0 )); then
@@ -38,7 +43,7 @@ test_create_aggregate() {
 }
 
 
-test_verify_metadata() {
+test_verify_metadata_signature() {
     export LOGLEVEL=INFO
     fingerprint_cert
     /opt/xmlsectool-2/xmlsectool.sh --verifySignature --inFile /var/md_feed/metadata.xml \
