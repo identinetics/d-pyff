@@ -37,11 +37,10 @@ usage() {
        -c  docker compose config file
        -C  Docker service name
        -D  specify docker-compose file directory
-       -g  git pull before pyff and push afterwards (use if PYFFOUT has a git repo)
+       -g  git pull before pyff and push afterwards (use if the publish dir of pyff has a git repo)
        -h  print this help text
        -H  generate HTML output from metadata
        -p  print docker exec command on stdout
-       -s  split and sign md aggregate using pyff for signing
        -S  split and sign md aggregate using xmlsectool for signing"
 }
 
