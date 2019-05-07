@@ -44,6 +44,7 @@
           <thead>
             <tr class="eduid_head">
               <th>Organisation</th>
+              <th>Logo</th>
               <th>
                 UI<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>Name
               </th>
@@ -59,6 +60,7 @@
           <tfoot>
             <tr class="eduid_head">
               <th>Organisation</th>
+              <th>Logo</th>
               <th>
                 UI<xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>Name
               </th>
@@ -143,6 +145,30 @@
       </xsl:choose>
     </xsl:variable>
 
+    <!-- Try hard to find a Logo URL -->
+    <xsl:variable name="mduiLogoURL.de">
+      <xsl:value-of select="md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo[@xml:lang='de']"/>
+    </xsl:variable>
+    <xsl:variable name="mduiLogoURL.en">
+      <xsl:value-of select="md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo[@xml:lang='en']"/>
+    </xsl:variable>
+    <xsl:variable name="mduiLogoURL.any">
+      <xsl:value-of select="md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo[@xml:lang and @xml:lang!='de' and @xml:lang!='en'][1]"/>
+    </xsl:variable>
+    <xsl:variable name="mduiLogoURL">
+      <xsl:choose>
+        <xsl:when test="string-length($mduiURL.de) &gt; 0">
+          <xsl:value-of select="$mduiURL.de"/>
+        </xsl:when>
+        <xsl:when test="string-length($mduiURL.en) &gt; 0">
+          <xsl:value-of select="$mduiURL.en"/>
+        </xsl:when>
+        <xsl:when test="string-length($mduiURL.any) &gt; 0">
+          <xsl:value-of select="$mduiURL.any"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+
     <!-- Try hard to find an Org URL -->
     <xsl:variable name="orgURL.de">
       <xsl:value-of select="md:Organization/md:OrganizationURL[@xml:lang='de']"/>
@@ -198,7 +224,24 @@
         </xsl:choose>
       </td>
 
-      <!-- Technical ContactPerson -->
+      <!-- Logo URL -->
+      <td valign="top">
+        <xsl:choose>
+          <xsl:when test="$mduiLogoURL and contains($mduiLogoURL, '://')">
+            <xsl:element name="img">
+              <xsl:attribute name="src">
+                <xsl:value-of select="$mduiLogoURL"/>
+              </xsl:attribute>
+              <xsl:value-of select="$Name"/>
+            </xsl:element>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="fehlt"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </td>
+
+      <!-- entity  UIInfo -->
       <td valign="top">
         <table>
           <tr>
@@ -256,18 +299,20 @@
       </td>
 
       <!-- Entity 
-        The file name is derived from the URL with by replacing '/' with '_' and ':' with '.' and appending '.xml'
+        The file name is the entityID as directory (double url-encoded) + 'ed.xml'
       -->
       <td valign="top">
-        <xsl:variable name="filename">
-          <xsl:value-of select="translate(translate(@entityID, ':', '.'), '/', '_')"/>
-        </xsl:variable>
         <xsl:variable name="encodedFilename">
           <xsl:call-template name="url-encode">
-            <xsl:with-param name="str" select="$filename"/>
+            <xsl:with-param name="str" select="@entityID"/>
           </xsl:call-template>
         </xsl:variable>
-        <a href="entities/{$encodedFilename}.xml">
+        <xsl:variable name="doubleEncodedFilename">
+          <xsl:call-template name="url-encode">
+            <xsl:with-param name="str" select="$encodedFilename"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <a href="entities/{$doubleEncodedFilename}/ed.xml">
           <xsl:value-of select="@entityID"/>
         </a>
       </td>
