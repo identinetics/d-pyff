@@ -16,10 +16,9 @@ The pyff project includes a Dockerfile based on Ubuntu. The differences of this 
 - Various default, suche as docker-compose configuration
 - Includes Jenkinsfile
 - Dependencies to use Gemalto eToken HSM
-- Does not start as root; drops capabilities
+- Drops capabilities
 - Automatic generation of image build numbers for both source repo and dependency changes (-> dcshell submodule)
 - Function to push the aggregate (md_feed) to a git repo
-- Function to generate HTML pages for IDPs and SPs
 - Optional signing with XMLSECTOOL (using a java-based library)
 
 
@@ -70,11 +69,16 @@ Functional enhancements to pyFF:
 [cols="2,4"]
 |===
 | MDSIGN_CERT, MDSIGN_KEY | Key pair for metadata signing, must match pipeline definition (see md/mdx_swcert.fd)
-| MD_AGGREGATE | Output file defined in pipeline definition to be use as input for split operation (options -s
 | MDFEED_HOST MDFEED_REPO MDFEED_SSHUSER | Access to output Repo whan using pyff_aggregate.sh -g
+| PIPELINEBATCH | Aggregator configuration file
+|===
+
+. Environment variables for signing with xmlsectool (deprecated)
+[cols="2,4"]
+|===
+| MD_AGGREGATE | Output file defined in pipeline definition to be use as input for split operation (options -s
 | MDSPLIT_UNSIGNED | Directory where mdsplit will store unsigned EntityDescriptor files
 | MDSPLIT_SIGNED | Directory where mdsplit will store signed EntityDescriptor files
-| PIPELINEBATCH | Aggregator configuration (by default in /etc/pyff)
 |===
 
 . Environment variables (using PKCS11 device for signing)
@@ -164,7 +168,6 @@ There is a Jenkinsfile for CI. To use it the jenkins user:
 
 == checking for errors
 
-By default, pyff is rather silent and does not output error conditions (to be fixed).
-For tracking problems:
+By default, pyff logs at level INFO. For tracking problems:
 
     export LOGLEVEL=DEBUG
