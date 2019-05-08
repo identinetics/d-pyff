@@ -1,0 +1,4 @@
+REPO::identinetics/d-pyff/mdsplit_36==#7e272bb
+REPO::identinetics/dcshell/==#07e8290
+REPO::identinetics/pyFF/==#c67f816
+FROM::intra/centos7_py36_base==2f5c64b94320

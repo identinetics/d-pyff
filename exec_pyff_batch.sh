@@ -17,9 +17,7 @@ get_commandline_opts() {
         C) servicename=$OPTARG;;
         D) projdir=$OPTARG;;
         g) git='True';;
-        H) htmlout='-H';;
         p) print='True';;
-        s) split='pyff';;
         S) split='xmlsectool';;
         :) echo "Option -$OPTARG requires an argument"
            exit 1;;
@@ -33,15 +31,16 @@ get_commandline_opts() {
 
 
 usage() {
-    echo "usage: $0 [-c compose-config | -C servicename] [-h] [-H] [-i] [-s|-S]
+    echo "usage: $0 [-c compose-config | -C servicename] [-D] [-g] [-h] [-p] [-S]
        -c  docker compose config file
        -C  Docker service name
        -D  specify docker-compose file directory
        -g  git pull before pyff and push afterwards (use if the publish dir of pyff has a git repo)
        -h  print this help text
-       -H  generate HTML output from metadata
        -p  print docker exec command on stdout
-       -S  split and sign md aggregate using xmlsectool for signing"
+       -S  split and sign md aggregate using xmlsectool for signing
+
+       run pyff with docker compose, or exec it in existing service"
 }
 
 

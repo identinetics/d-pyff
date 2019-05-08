@@ -13,15 +13,8 @@ if [ -z "$LOGFILE" ]; then LOGFILE='/var/log/pyff_mdsplit.log'; fi
 
 
 
-# Step 1. Split aggregate and create an XML and a pipeline file per EntityDescriptor
-mkdir -p $MDSPLIT_UNSIGNED $MDSPLIT_SIGNED
-rm -rf $MDSPLIT_UNSIGNED/*
-[ "$LOGLEVEL" == "DEBUG" ] && echo "processing md aggregate"
-/usr/bin/pyff_mdsplit.py $* \
-    --nocleanup \
-    --nosign \
-    --logfile $LOGFILE --loglevel DEBUG \
-    $MD_AGGREGATE $MDSPLIT_UNSIGNED
+# Step 1. create one unsigned file per EntityDescriptor
+# need to run pyff using publish_split configuration
 
 # Step 2. Execute xmlsectool to sign each EntityDescriptor (ignoring pyff pipeline)
 # Problem: pyff does not create signatures with exclusive c14n (http://www.w3.org/2001/10/xml-exc-c14n#)
