@@ -1,5 +1,8 @@
 #!/bin/sh
 
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+
 main() {
     #block_root
     aggregate_metadata
